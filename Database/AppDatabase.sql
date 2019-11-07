@@ -19,8 +19,9 @@ CREATE TABLE users (
 -- POSTS TABLE:
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
-    owner_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
-    body TEXT NOT NULL
+    poster_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
+    body TEXT NOT NULL,
+    posting_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 
@@ -28,22 +29,25 @@ CREATE TABLE posts (
 CREATE TABLE albums (
     id SERIAL PRIMARY KEY,
     album_name VARCHAR,
-    owner_username VARCHAR REFERENCES users (username) ON DELETE CASCADE
+    owner_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
+    album_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 -- PICTURES TABLE
 CREATE TABLE pictures (
     id SERIAL PRIMARY KEY,
     album_id INT REFERENCES albums (id) ON DELETE CASCADE,
-    picure_link VARCHAR NOT NULL
+    picure_link VARCHAR NOT NULL,
+    picture_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 -- COMMENTS TABLE:
 CREATE TABLE comments (
     id SERIAL PRIMARY KEY,
-    owner_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
+    author_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
     post_id INT REFERENCES posts (id) ON DELETE CASCADE,
-    picture_id INT REFERENCES pictures (id) ON DELETE CASCADE
+    picture_id INT REFERENCES pictures (id) ON DELETE CASCADE,
+    comment_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 -- LIKES TABLE:
