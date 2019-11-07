@@ -7,9 +7,10 @@ CREATE DATABASE social_media_app_db;
 -- USERS TABLE:
 CREATE TABLE users (
     username VARCHAR PRIMARY KEY,
-    firstname TEXT NOT NULL,
-    lastname TEXT NOT NULL,
+    firstname VARCHAR NOT NULL,
+    lastname VARCHAR NOT NULL,
     dob DATE NOT NULL,
+    user_password VARCHAR NOT NULL,
     signing_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 -- PostgreSQL uses the  yyyy-mm-dd format (ENTERED AS A STRING!!!)
@@ -20,7 +21,7 @@ CREATE TABLE users (
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
     poster_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
-    body TEXT NOT NULL,
+    body VARCHAR NOT NULL,
     posting_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
@@ -59,14 +60,14 @@ CREATE TABLE likes (
 );
 
 
-INSERT INTO users (username, firstname, lastname, dob)
-    VALUES ('vonbar','Voniel','Brown', '1995-08-23'),
-            ('AminesCodes', 'Amine', 'Bensalem', '1983-06-14'),
-            ('sergiocohens', 'Sergio', 'Cohen-Salama', '1987-04-10'),
-            ('jenama','Johanne','Enama', '1991-03-15');
+INSERT INTO users (username, firstname, lastname, dob, user_password)
+    VALUES ('vonbar','Voniel','Brown', '1995-08-23', '123'),
+            ('AminesCodes', 'Amine', 'Bensalem', '1983-06-14', '456'),
+            ('sergiocohens', 'Sergio', 'Cohen-Salama', '1987-04-10', '789'),
+            ('jenama','Johanne','Enama', '1991-03-15', '234');
 
 
-INSERT INTO posts (owner_username, body)
+INSERT INTO posts (poster_username, body)
     VALUES ('AminesCodes', 'This is my first post :)'),
             ('vonbar', 'I like turtles'),
             ('AminesCodes', 'I like this chair !!'),
@@ -76,4 +77,4 @@ INSERT INTO posts (owner_username, body)
             ('sergiocohens', 'save the whales'),
             ('sergiocohens', 'eat pray and love');
             
-SELECT * FROM users JOIN posts ON username = owner_username
+SELECT * FROM users JOIN posts ON username = poster_username;
