@@ -110,4 +110,44 @@ const likedPost = (req, res) => {
 
 router.post('/posts/:post_id', queryToLikePost, noDupeLike, likedPost)
 
+//this middleware performs the query to the database for the endpoint to get picture by picture id
+//it outputs the returned promise
+const getLikesByPictureID = async (req, res, next) => {
+    let picId = req.params.picture_id;
+    try {
+        let insertQuery = `
+        SELECT * FROM likes JOIN users ON users.username = likes.liker_username WHERE picture_id = $1
+        `
+        req.picLikes = await db.any(insertQuery, [picId])
+        next();
+    } catch (error) {
+        res.json({
+            status: 'failure',
+            message: 'There was an error'
+        })
+        console.log(error);
+    }
+}
+// this function takes in the promise and checks if it contains data
+const validatePicQuery = (req, res, next) => {
+    let body = req.picLikes
+    // console.log(body);
+
+    body.length === 0 ? res.json({
+        status: 'failed',
+        message: 'Picture doesn\'t exist'
+    }) : next()
+}
+
+//this function sends the valid query results to server after the chhecks
+const displayPicQuery = (req, res) => {
+    res.json({
+        status: 'Success',
+        message: 'Success. Retrieved all the likes for',
+        body: req.picLikes
+    })
+}
+//router endpoint for the query to get likes by picture id
+router.get('/pictures/:picture_id', getLikesByPictureID, validatePicQuery, displayPicQuery)
+
 module.exports = router;
