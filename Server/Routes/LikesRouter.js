@@ -72,7 +72,7 @@ const queryToLikePost = async (req, res, next) => {
         INSERT INTO likes (liker_username,post_id)
             VALUES($1, $2)`
 
-        req.test = await db.none(insertQuery, [req.body.liker_username, req.body.post_id])
+        req.postLiker = await db.none(insertQuery, [req.body.liker_username, req.body.post_id])
         next()
     } catch (error) {
         res.json({
@@ -117,7 +117,7 @@ const likedPost = (req, res) => {
     })
 }
 
-router.post('/posts/:post_id', getLikesByPostID, likedPost)
+router.post('/posts/:post_id', queryToLikePost, likedPost)
 
 //this middleware performs the query to the database for the endpoint to get picture by picture id
 //it outputs the returned promise
@@ -155,5 +155,39 @@ const displayPicQuery = (req, res) => {
 }
 //router endpoint for the query to get likes by picture id
 router.get('/pictures/:picture_id', getLikesByPictureID, validatePicQuery, displayPicQuery)
+
+//this route will allow users to like another users picture
+//by using the picture_id
+const queryToLikePicture = async (req, res, next) => {
+    try {
+        let insertQuery = `
+        INSERT INTO likes (liker_username,picture_id)
+            VALUES($1, $2)`
+
+        req.picLiker = await db.none(insertQuery, [req.body.liker_username, req.body.picture_id])
+        next()
+    } catch (error) {
+        res.json({
+            status: 'failure',
+            message: 'There was an error sending like request'
+        })
+        console.log(error);
+    }
+}
+
+// const noDupeLike = (req, res, next) => {
+//
+// }
+
+const likedPicture = (req, res) => {
+    res.json({
+        status: 'success',
+        message: 'Success, request sent',
+        body: req.body
+    })
+}
+
+router.post('/pictures/:picture_id', queryToLikePicture, likedPicture)
+
 
 module.exports = router;
