@@ -84,20 +84,29 @@ const queryToLikePost = async (req, res, next) => {
 }
 
 // const noDupeLike = (req, res, next) => {
-//     let data = req.test
-//     console.log(data);
+//     let data = req.postLikes
+//     console.log('this is data', data);
 
-// data.forEach(ele => {
-//     if (ele.liker_username === req.body.liker_username) {
-//         res.json({
-//             status: 'failure'
-//         })
-//     }
-//     // ele.liker_username === req.body.liker_username ? res.json({
-//     //     status: 'failure'
-//     // }) : next();
-// });
-// next();
+//     data.forEach(ele => {
+//         console.log("this is ele", ele.liker_username);
+//         console.log('this is body', req.body.liker_username);
+
+//         // if (!data.includes({
+//         //         liker_username: req.body.liker_username
+//         //     })) {
+//         //     next();
+//         // } else {
+//         //     res.json({
+//         //         status: 'failure'
+//         //     })
+//         // }
+//         if (ele.liker_username === req.body.liker_username) {
+//             res.json({
+//                 status: 'failure'
+//             })
+//         }
+//     });
+//     next();
 // }
 
 const likedPost = (req, res) => {
@@ -108,7 +117,7 @@ const likedPost = (req, res) => {
     })
 }
 
-router.post('/posts/:post_id', queryToLikePost, noDupeLike, likedPost)
+router.post('/posts/:post_id', getLikesByPostID, likedPost)
 
 //this middleware performs the query to the database for the endpoint to get picture by picture id
 //it outputs the returned promise
@@ -128,22 +137,19 @@ const getLikesByPictureID = async (req, res, next) => {
         console.log(error);
     }
 }
-// this function takes in the promise and checks if it contains data
+// middleware that takes in the promise and checks if it contains data
 const validatePicQuery = (req, res, next) => {
-    let body = req.picLikes
-    // console.log(body);
-
-    body.length === 0 ? res.json({
+    req.picLikes.length === 0 ? res.json({
         status: 'failed',
         message: 'Picture doesn\'t exist'
     }) : next()
 }
 
-//this function sends the valid query results to server after the chhecks
+//this middleware sends the valid query results to server after the chhecks
 const displayPicQuery = (req, res) => {
     res.json({
         status: 'Success',
-        message: 'Success. Retrieved all the likes for',
+        message: 'Success. Retrieved all the likes for picture',
         body: req.picLikes
     })
 }
