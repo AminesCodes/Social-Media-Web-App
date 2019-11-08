@@ -6,21 +6,22 @@ const {
     db
 } = require('../../Database/database'); //connected db instance
 
-//This endpoint retrieves all the likes by the users
+//This endpoint retrieves everything from the likes tables
+//shows all posts/pictures that were liked by any user
 router.get('/', async (req, res) => {
 
     try {
-        let post = await db.any(`SELECT * FROM likes`)
+        let post = await db.any(`SELECT * FROM likes`);
         res.json({
             status: 'Success',
-            message: 'Success. Retrieved all the likes',
+            message: 'retrieved all the likes',
             body: post
-        })
+        });
     } catch (error) {
         res.json({
             status: 'failure',
             message: 'There was an error, try again'
-        })
+        });
     }
 
 });
@@ -34,16 +35,41 @@ router.get('/posts/times_liked', async (req, res) => {
         JOIN likes ON posts.id = likes.post_id
         GROUP BY posts.id
         ORDER BY times_liked DESC
-        `
+        `;
         let liked = await db.any(insertQuery)
         res.json({
             status: 'success',
-            message: 'Success, request sent',
+            message: 'request sent',
             body: liked,
-        })
+        });
     } catch (error) {
         res.json({
             message: 'There was an error the retrieving data'
+        });
+        console.log(error);
+    }
+});
+
+//finding the most liked post
+router.get('/posts/popular', async (req, res) => {
+    try {
+        let insertQuery = `
+        SELECT * from users
+        JOIN posts ON users.username = posts.poster_username
+        WHERE posts.id = (
+            SELECT posts.id FROM posts JOIN likes ON posts.id = likes.post_id 
+            GROUP BY posts.id ORDER BY COUNT(posts.body) DESC LIMIT 1
+        )
+        `;
+        let num1 = await db.any(insertQuery)
+        res.json({
+            status: 'success',
+            message: 'request sent',
+            body: num1
+        });
+    } catch (error) {
+        res.json({
+            message: 'There was an error sending request'
         })
         console.log(error);
     }
@@ -56,8 +82,8 @@ const getLikesByPostID = async (req, res, next) => {
     try {
         let insertQuery = `
         SELECT * FROM likes JOIN users ON users.username = likes.liker_username WHERE post_id = $1
-        `
-        req.postLikes = await db.any(insertQuery, [postId])
+        `;
+        req.postLikes = await db.any(insertQuery, [postId]);
         next();
     } catch (error) {
         res.json({
@@ -74,19 +100,37 @@ const validatePostQuery = (req, res, next) => {
     body.length === 0 ? res.json({
         status: 'failed',
         message: 'Post doesn\'t exist'
-    }) : next()
+    }) : next();
 }
 //this function sends the valid query results to server
 const displayPostQuery = (req, res) => {
     res.json({
         status: 'Success',
-        message: 'Success. Retrieved all the likes',
+        message: 'retrieved all post likes',
         body: req.postLikes
-    })
+    });
 }
 //router endpoint for the query to get likes by post id
 router.get('/posts/:post_id', getLikesByPostID, validatePostQuery, displayPostQuery)
 
+//get the posts that a user liked
+router.get('/posts/interest/:liker_username', async (req, res) => {
+    let likerUsername = req.params.liker_username;
+    try {
+        let specPost = await db.any('SELECT * FROM likes WHERE liker_username = $1', [likerUsername])
+        res.json({
+            status: 'success',
+            message: 'retrieved the likes',
+            body: specPost,
+        })
+
+    } catch (error) {
+        res.json({
+            status: 'failure',
+            message: `You took a wrong turn`
+        })
+    }
+});
 
 //this route allows the user to like another users post
 const queryToLikePost = async (req, res, next) => {
@@ -106,35 +150,18 @@ const queryToLikePost = async (req, res, next) => {
     }
 }
 
-const noDupeLike = (req, res, next) => {
-    let data = req.postLikes
-    // console.log('this is data', data);
-
-    data.forEach(ele => {
-        // console.log("this is ele", data[1].liker_username);
-        // console.log('this is body', req.body.liker_username);
-
-        if (ele.liker_username === req.body.liker_username) {
-            res.json({
-                status: 'failure'
-            })
-        }
-    });
-    next()
-}
-
 //middleware to send the information to the server is user successfully liked a pot
 const likedPost = (req, res) => {
     console.log(req.body);
 
     res.json({
         status: 'success',
-        message: 'Success, request sent',
+        message: 'request sent',
         body: req.body
-    })
+    });
 }
-
-router.post('/posts/:post_id', getLikesByPostID, queryToLikePost, noDupeLike, likedPost)
+//router endpoint to create a like on a post
+router.post('/posts/:post_id', queryToLikePost, likedPost);
 
 //this route will allow users to delete their likes on a post
 //by using the post_id
@@ -149,7 +176,7 @@ const deletePostLikeQuery = async (req, res, next) => {
         res.json({
             status: 'failure',
             message: 'you took a wrong turn'
-        })
+        });
     }
 
 }
@@ -158,14 +185,14 @@ const deletePostLikeQuery = async (req, res, next) => {
 const deletedLike = (req, res) => {
     res.json({
         status: 'success',
-        message: 'Success, request sent',
+        message: 'request sent',
         body: req.delete
-    })
+    });
 }
-
+//router endpoint to delete a post by a user
 router.delete('/posts/:post_id/:liker_username', getLikesByPostID, validatePostQuery, deletePostLikeQuery, deletedLike);
 
-//retrieve the number of times a picture is liked by all users
+//retrieves the number of times a picture is liked by all users
 router.get('/pictures/times_liked', async (req, res) => {
     try {
         let insertQuery = `
@@ -174,16 +201,41 @@ router.get('/pictures/times_liked', async (req, res) => {
         JOIN likes ON pictures.id = likes.picture_id
         GROUP BY pictures.id
         ORDER BY times_liked DESC
-        `
+        `;
         let liked = await db.any(insertQuery)
         res.json({
             status: 'success',
-            message: 'Success, request sent',
+            message: 'request sent',
             body: liked,
         })
     } catch (error) {
         res.json({
             message: 'There was an error the retrieving data'
+        })
+        console.log(error);
+    }
+});
+
+//this router queries to the database to find the most liked picture
+router.get('/pictures/popular', async (req, res) => {
+    try {
+        let insertQuery = `
+        SELECT * from pictures 
+        WHERE pictures.id = (
+            SELECT pictures.id FROM pictures JOIN likes ON pictures.id = likes.picture_id 
+            GROUP BY pictures.id ORDER BY COUNT(pictures.id) DESC LIMIT 1
+        )
+        `;
+        let num1 = await db.any(insertQuery)
+        res.json({
+            status: 'success',
+            message: 'request successfully sent',
+            body: num1
+        });
+    } catch (error) {
+        res.json({
+            status: 'failure',
+            message: 'There was an error sending request'
         })
         console.log(error);
     }
@@ -196,8 +248,8 @@ const getLikesByPictureID = async (req, res, next) => {
     try {
         let insertQuery = `
         SELECT * FROM likes JOIN users ON users.username = likes.liker_username WHERE picture_id = $1
-        `
-        req.picLikes = await db.any(insertQuery, [picId])
+        `;
+        req.picLikes = await db.any(insertQuery, [picId]);
         next();
     } catch (error) {
         res.json({
@@ -210,9 +262,9 @@ const getLikesByPictureID = async (req, res, next) => {
 // middleware that takes in the promise and checks if it contains data
 const validatePicQuery = (req, res, next) => {
     req.picLikes.length === 0 ? res.json({
-        status: 'failed',
+        status: 'failure',
         message: 'Picture doesn\'t exist'
-    }) : next()
+    }) : next();
 }
 
 //this middleware sends the valid query results to server after the checks
@@ -221,10 +273,29 @@ const displayPicQuery = (req, res) => {
         status: 'Success',
         message: 'Success. Retrieved all the likes for picture',
         body: req.picLikes
-    })
+    });
 }
 //router endpoint for the query to get likes by picture id
-router.get('/pictures/:picture_id', getLikesByPictureID, validatePicQuery, displayPicQuery)
+router.get('/pictures/:picture_id', getLikesByPictureID, validatePicQuery, displayPicQuery);
+
+//router that gets the posts that a user liked
+router.get('/pictures/interest/:liker_username', async (req, res) => {
+    let likerUsername = req.params.liker_username;
+    try {
+        let specPost = await db.any('SELECT * FROM likes WHERE liker_username = $1', [likerUsername]);
+        res.json({
+            status: 'success',
+            message: 'retrieved all likes',
+            body: specPost,
+        });
+
+    } catch (error) {
+        res.json({
+            status: 'failure',
+            message: `You took a wrong turn`
+        });
+    }
+});
 
 //this route will allow users to like another users picture
 //by using the picture_id
@@ -232,10 +303,10 @@ const queryToLikePicture = async (req, res, next) => {
     try {
         let insertQuery = `
         INSERT INTO likes (liker_username,picture_id)
-            VALUES($1, $2)`
+            VALUES($1, $2)`;
 
-        req.picLiker = await db.none(insertQuery, [req.body.liker_username, req.body.picture_id])
-        next()
+        req.picLiker = await db.none(insertQuery, [req.body.liker_username, req.body.picture_id]);
+        next();
     } catch (error) {
         res.json({
             status: 'failure',
@@ -245,19 +316,16 @@ const queryToLikePicture = async (req, res, next) => {
     }
 }
 
-// const noDupeLike = (req, res, next) => {
-//
-// }
-
+//middleware that sends to the server the successful request by the user
 const likedPicture = (req, res) => {
     res.json({
         status: 'success',
         message: 'Success, request sent',
         body: req.body
-    })
+    });
 }
 
-router.post('/pictures/:picture_id', queryToLikePicture, likedPicture)
+router.post('/pictures/:picture_id', queryToLikePicture, likedPicture);
 
 //this route will allow users to delete their likes on pictures
 //by using the picture_id
@@ -266,16 +334,16 @@ const deletePicLikeQuery = async (req, res, next) => {
     likerUsername = req.params.liker_username;
     let deleteQuery = `DELETE FROM likes WHERE picture_id = $1 AND liker_username = $2`
     try {
-        req.delete = await db.none(deleteQuery, [picId, likerUsername])
-        next()
+        req.delete = await db.none(deleteQuery, [picId, likerUsername]);
+        next();
     } catch (error) {
         res.json({
             status: 'failure',
             message: 'you took a wrong turn'
-        })
+        });
     }
 }
 
-router.delete('/pictures/:picture_id/:liker_username', getLikesByPictureID, validatePicQuery, deletePicLikeQuery, deletedLike)
+router.delete('/pictures/:picture_id/:liker_username', getLikesByPictureID, validatePicQuery, deletePicLikeQuery, deletedLike);
 
 module.exports = router;
