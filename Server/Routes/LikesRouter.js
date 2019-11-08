@@ -51,7 +51,7 @@ const validateQuery = (req, res, next) => {
 
     body.length === 0 ? res.json({
         status: 'failed',
-        message: 'oops something went wrong'
+        message: 'Post doesn\'t exist'
     }) : next()
 }
 //this function sends the valid query results to server
@@ -65,5 +65,42 @@ const displayQuery = (req, res) => {
 //router endpoint for the query to get likes by post id
 router.get('/posts/:post_id', getLikesByPostID, validateQuery, displayQuery)
 
+
+//this route allows the user to like another users post
+const queryToLikePost = async (req, res, next) => {
+    try {
+        let insertQuery = `
+        INSERT INTO likes (liker_username,post_id)
+            VALUES($1, $2)`
+
+        await db.none(insertQuery, [req.body.liker_username, req.body.post_id])
+        next()
+    } catch (error) {
+        res.json({
+            status: 'failure',
+            message: 'There was an error sending like request'
+        })
+        console.log(error);
+    }
+}
+
+const noDupeLike = (req, res, next) => {
+    let data = req.postLikes
+    data.forEach(ele => {
+        ele.liker_username === req.body.liker_username ? res.json({
+            status: 'failure'
+        }) : next();
+    });
+}
+
+const likedPost = (req, res) => {
+    res.json({
+        status: 'success',
+        message: 'Success, request sent',
+        body: req.body
+    })
+}
+
+router.post('/posts/:post_id', queryToLikePost, noDupeLike, likedPost)
 
 module.exports = router;
