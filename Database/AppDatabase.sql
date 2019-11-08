@@ -22,7 +22,7 @@ CREATE TABLE users
 CREATE TABLE posts
 (
     id SERIAL PRIMARY KEY,
-    poster_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
+    poster_username VARCHAR REFERENCES users (username) ON DELETE CASCADE ON UPDATE CASCADE,
     body VARCHAR NOT NULL,
     posting_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
@@ -33,7 +33,7 @@ CREATE TABLE albums
 (
     id SERIAL PRIMARY KEY,
     album_name VARCHAR,
-    owner_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
+    owner_username VARCHAR REFERENCES users (username) ON DELETE CASCADE ON UPDATE CASCADE,
     album_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
@@ -41,7 +41,7 @@ CREATE TABLE albums
 CREATE TABLE pictures
 (
     id SERIAL PRIMARY KEY,
-    album_id INT REFERENCES albums (id) ON DELETE CASCADE,
+    album_id INT REFERENCES albums (id) ON DELETE CASCADE ON UPDATE CASCADE,
     picure_link VARCHAR NOT NULL,
     picture_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
@@ -50,9 +50,9 @@ CREATE TABLE pictures
 CREATE TABLE comments
 (
     id SERIAL PRIMARY KEY,
-    author_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
-    post_id INT REFERENCES posts (id) ON DELETE CASCADE,
-    picture_id INT REFERENCES pictures (id) ON DELETE CASCADE,
+    author_username VARCHAR REFERENCES users (username) ON DELETE CASCADE ON UPDATE CASCADE,
+    post_id INT REFERENCES posts (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    picture_id INT REFERENCES pictures (id) ON DELETE CASCADE ON UPDATE CASCADE,
     comment TEXT,
     comment_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
@@ -61,9 +61,9 @@ CREATE TABLE comments
 CREATE TABLE likes
 (
     id SERIAL PRIMARY KEY,
-    liker_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
-    post_id INT REFERENCES posts (id) ON DELETE CASCADE,
-    picture_id INT REFERENCES pictures (id) ON DELETE CASCADE
+    liker_username VARCHAR REFERENCES users (username) ON DELETE CASCADE ON UPDATE CASCADE,
+    post_id INT REFERENCES posts (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    picture_id INT REFERENCES pictures (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -71,7 +71,7 @@ INSERT INTO users
     (username, firstname, lastname, dob, user_password)
 VALUES
     ('vonbar', 'Voniel', 'Brown', '1995-08-23', '123'),
-    ('AminesCodes', 'Amine', 'Bensalem', '1983-06-14', '456'),
+    ('aminescodes', 'Amine', 'Bensalem', '1983-06-14', '456'),
     ('sergiocohens', 'Sergio', 'Cohen-Salama', '1987-04-10', '789'),
     ('jenama', 'Johanne', 'Enama', '1991-03-15', '234');
 
@@ -79,9 +79,9 @@ VALUES
 INSERT INTO posts
     (poster_username, body)
 VALUES
-    ('AminesCodes', 'This is my first post :)'),
+    ('aminescodes', 'This is my first post :)'),
     ('vonbar', 'I like turtles'),
-    ('AminesCodes', 'I like this chair !!'),
+    ('aminescodes', 'I like this chair !!'),
     ('vonbar', 'this is a post'),
     ('jenama', 'let''s do this'),
     ('jenama', 'posting something'),
@@ -96,9 +96,9 @@ INSERT INTO albums
 VALUES
     ('album1', 'jenama'),
     ('album1', 'sergiocohens'),
-    ('album1', 'AminesCodes'),
+    ('album1', 'aminescodes'),
     ('album1', 'vonbar'),
-    ('Pixar', 'AminesCodes');
+    ('Pixar', 'aminescodes');
 
 
 INSERT INTO pictures
@@ -121,7 +121,7 @@ INSERT INTO comments
 VALUES
     ('sergiocohens', 1, 'Better late then never'),
     ('jenama', 2, 'cute creatures'),
-    ('AminesCodes', 2, 'yeah, unless they are a ninja one'),
+    ('aminescodes', 2, 'yeah, unless they are a ninja one'),
     ('vonbar', 5, 'Go fot it!!'),
     ('vonbar', 8, 'Interesting point of view');
 
@@ -129,7 +129,7 @@ VALUES
 INSERT INTO comments
     (author_username, picture_id, comment)
 VALUES
-    ('AminesCodes', 1, 'Amine Comment on Johanne album1 picture1'),
+    ('aminescodes', 1, 'Amine Comment on Johanne album1 picture1'),
     ('sergiocohens', 2, 'Sergio Comment on Johanne album1 picture2'),
     ('jenama', 3, 'Johanne Comment Sergio on album1 picture1'),
     ('jenama', 4, 'Johanne Comment Sergio on album1 picture2'),
@@ -157,10 +157,10 @@ VALUES
 INSERT INTO likes
     (liker_username, picture_id)
 VALUES
-    ('AminesCodes', 1),
-    ('AminesCodes', 2),
-    ('AminesCodes', 3),
-    ('AminesCodes', 7),
+    ('aminescodes', 1),
+    ('aminescodes', 2),
+    ('aminescodes', 3),
+    ('aminescodes', 7),
     ('vonbar', 1),
     ('vonbar', 2),
     ('vonbar', 3),
