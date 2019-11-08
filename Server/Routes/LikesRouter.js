@@ -47,7 +47,6 @@ const getLikesByPostID = async (req, res, next) => {
 const validatePostQuery = (req, res, next) => {
     let body = req.postLikes
     // console.log(body);
-
     body.length === 0 ? res.json({
         status: 'failed',
         message: 'Post doesn\'t exist'
@@ -109,6 +108,7 @@ const queryToLikePost = async (req, res, next) => {
 //     next();
 // }
 
+//middleware to send the information to the server is user successfully liked a pot
 const likedPost = (req, res) => {
     res.json({
         status: 'success',
@@ -120,7 +120,7 @@ const likedPost = (req, res) => {
 router.post('/posts/:post_id', queryToLikePost, likedPost)
 
 //this route will allow users to delete their likes on a post
-//by using the picture_id
+//by using the post_id
 const deletePostLikeQuery = async (req, res, next) => {
     postId = req.params.post_id;
     likerUsername = req.params.liker_username;
@@ -137,6 +137,7 @@ const deletePostLikeQuery = async (req, res, next) => {
 
 }
 
+//middleware that will send to the server information if the delete request was successful
 const deletedLike = (req, res) => {
     res.json({
         status: 'success',
@@ -173,7 +174,7 @@ const validatePicQuery = (req, res, next) => {
     }) : next()
 }
 
-//this middleware sends the valid query results to server after the chhecks
+//this middleware sends the valid query results to server after the checks
 const displayPicQuery = (req, res) => {
     res.json({
         status: 'Success',
@@ -217,5 +218,23 @@ const likedPicture = (req, res) => {
 
 router.post('/pictures/:picture_id', queryToLikePicture, likedPicture)
 
+//this route will allow users to delete their likes on pictures
+//by using the picture_id
+const deletePicLikeQuery = async (req, res, next) => {
+    picId = req.params.picture_id;
+    likerUsername = req.params.liker_username;
+    let deleteQuery = `DELETE FROM likes WHERE picture_id = $1 AND liker_username = $2`
+    try {
+        req.delete = await db.none(deleteQuery, [picId, likerUsername])
+        next()
+    } catch (error) {
+        res.json({
+            status: 'failure',
+            message: 'you took a wrong turn'
+        })
+    }
+}
+
+router.delete('/pictures/:picture_id/:liker_username', getLikesByPictureID, validatePicQuery, deletePicLikeQuery, deletedLike)
 
 module.exports = router;
