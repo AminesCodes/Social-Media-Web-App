@@ -77,8 +77,9 @@ INSERT INTO posts (poster_username, body)
             ('jenama', 'posting something'),
             ('sergiocohens', 'save the whales'),
             ('sergiocohens', 'eat pray and love');
-            
-SELECT * FROM users JOIN posts ON username = poster_username;
+
+-- FOR MERGE CONFLICT, copy the fellowing and paste at the end of the previous version of this file
+-- after removing the last line (line 80) (SELECT * FROM users JOIN posts ON username = poster_username;)
 
 INSERT INTO albums (album_name, owner_username)
     VALUES ('album1', 'jenama'),
@@ -86,6 +87,7 @@ INSERT INTO albums (album_name, owner_username)
             ('album1', 'AminesCodes'),
             ('album1', 'vonbar'),
             ('Pixar', 'AminesCodes');
+
 
 INSERT INTO pictures (album_id, picure_link)
     VALUES (1, 'https://cdn.tinybuddha.com/wp-content/uploads/2015/10/Having-Fun.png'),
@@ -99,8 +101,6 @@ INSERT INTO pictures (album_id, picure_link)
             (5, 'https://www.pop-culture.biz/images17/0737CABF.jpg'),
             (5, 'https://usercontent1.hubstatic.com/14174350.png');
 
-SELECT * FROM albums JOIN pictures ON albums.id = album_id;
-
 
 INSERT INTO comments (author_username, post_id, comment)
     VALUES ('sergiocohens', 1, 'Better late then never'),
@@ -108,6 +108,7 @@ INSERT INTO comments (author_username, post_id, comment)
             ('AminesCodes', 2, 'yeah, unless they are a ninja one'),
             ('vonbar', 5, 'Go fot it!!'),
             ('vonbar', 8, 'Interesting point of view');
+
 
 INSERT INTO comments (author_username, picture_id, comment)
     VALUES ('AminesCodes', 1, 'Amine Comment on Johanne album1 picture1'),
@@ -121,8 +122,6 @@ INSERT INTO comments (author_username, picture_id, comment)
             ('vonbar', 9, 'Voniel Comment on Amin album2 picture1'),
             ('sergiocohens', 7, 'Sergio Comment on Voniel album1 picture1');
 
-SELECT * FROM comments;
-
 
 INSERT INTO likes (liker_username, post_id)
     VALUES ('jenama', 1),
@@ -134,6 +133,7 @@ INSERT INTO likes (liker_username, post_id)
             ('sergiocohens', 5),
             ('sergiocohens', 6);
 
+
 INSERT INTO likes (liker_username, picture_id)
     VALUES ('AminesCodes', 1),
             ('AminesCodes', 2),
@@ -143,5 +143,3 @@ INSERT INTO likes (liker_username, picture_id)
             ('vonbar', 2),
             ('vonbar', 3),
             ('vonbar', 4);
-
-SELECT * FROM likes;
