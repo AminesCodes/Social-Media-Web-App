@@ -12,14 +12,14 @@ router.get('/', async (req, res) => {
     try {
         let post = await db.any(`SELECT * FROM likes`)
         res.json({
-            status: "Success",
-            message: "Success. Retrieved all the likes",
+            status: 'Success',
+            message: 'Success. Retrieved all the likes',
             body: post
         })
     } catch (error) {
         res.json({
             status: 'failure',
-            message: "There was an error, try again"
+            message: 'There was an error, try again'
         })
     }
 
@@ -38,7 +38,7 @@ const getLikesByPostID = async (req, res, next) => {
     } catch (error) {
         res.json({
             status: 'failure',
-            message: "There was an error"
+            message: 'There was an error'
         })
         console.log(error);
     }
@@ -56,8 +56,8 @@ const validatePostQuery = (req, res, next) => {
 //this function sends the valid query results to server
 const displayPostQuery = (req, res) => {
     res.json({
-        status: "Success",
-        message: "Success. Retrieved all the likes",
+        status: 'Success',
+        message: 'Success. Retrieved all the likes',
         body: req.postLikes
     })
 }
@@ -83,22 +83,22 @@ const queryToLikePost = async (req, res, next) => {
     }
 }
 
-const noDupeLike = (req, res, next) => {
-    let data = req.test
-    console.log(data);
+// const noDupeLike = (req, res, next) => {
+//     let data = req.test
+//     console.log(data);
 
-    // data.forEach(ele => {
-    //     if (ele.liker_username === req.body.liker_username) {
-    //         res.json({
-    //             status: 'failure'
-    //         })
-    //     }
-    //     // ele.liker_username === req.body.liker_username ? res.json({
-    //     //     status: 'failure'
-    //     // }) : next();
-    // });
-    // next();
-}
+// data.forEach(ele => {
+//     if (ele.liker_username === req.body.liker_username) {
+//         res.json({
+//             status: 'failure'
+//         })
+//     }
+//     // ele.liker_username === req.body.liker_username ? res.json({
+//     //     status: 'failure'
+//     // }) : next();
+// });
+// next();
+// }
 
 const likedPost = (req, res) => {
     res.json({
