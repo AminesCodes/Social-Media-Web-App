@@ -38,7 +38,8 @@ CREATE TABLE albums (
 CREATE TABLE pictures (
     id SERIAL PRIMARY KEY,
     album_id INT REFERENCES albums (id) ON DELETE CASCADE,
-    picure_link TEXT NOT NULL,
+    picure_link VARCHAR NOT NULL,
+
     picture_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
@@ -48,7 +49,6 @@ CREATE TABLE comments (
     author_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
     post_id INT REFERENCES posts (id) ON DELETE CASCADE,
     picture_id INT REFERENCES pictures (id) ON DELETE CASCADE,
-    comment TEXT,
     comment_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
@@ -72,7 +72,7 @@ INSERT INTO posts (poster_username, body)
     VALUES ('AminesCodes', 'This is my first post :)'),
             ('vonbar', 'I like turtles'),
             ('AminesCodes', 'I like this chair !!'),
-            ('vonbar', 'this is a post'),
+                        ('vonbar', 'this is a post'),
             ('jenama', 'let''s do this'),
             ('jenama', 'posting something'),
             ('sergiocohens', 'save the whales'),
@@ -143,3 +143,7 @@ INSERT INTO likes (liker_username, picture_id)
             ('vonbar', 2),
             ('vonbar', 3),
             ('vonbar', 4);
+
+            
+SELECT * FROM users JOIN posts ON username = poster_username;
+
