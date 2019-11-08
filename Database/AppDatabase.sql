@@ -53,7 +53,7 @@ CREATE TABLE comments
     author_username VARCHAR REFERENCES users (username) ON DELETE CASCADE,
     post_id INT REFERENCES posts (id) ON DELETE CASCADE,
     picture_id INT REFERENCES pictures (id) ON DELETE CASCADE,
-    comment Text,
+    comment TEXT,
     comment_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
