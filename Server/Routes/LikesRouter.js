@@ -25,6 +25,30 @@ router.get('/', async (req, res) => {
 
 });
 
+//retrieve the number of times a post is liked by all users
+router.get('/posts/times_liked', async (req, res) => {
+    try {
+        let insertQuery = `
+        SELECT posts.id AS post_id, COUNT(posts.id) AS times_liked
+        from posts
+        JOIN likes ON posts.id = likes.post_id
+        GROUP BY posts.id
+        ORDER BY times_liked DESC
+        `
+        let liked = await db.any(insertQuery)
+        res.json({
+            status: 'success',
+            message: 'Success, request sent',
+            body: liked,
+        })
+    } catch (error) {
+        res.json({
+            message: 'There was an error the retrieving data'
+        })
+        console.log(error);
+    }
+});
+
 //this middleware performs the query to the database for the endpoint to get likes by post id
 //it outputs the returned promise
 const getLikesByPostID = async (req, res, next) => {
@@ -82,34 +106,27 @@ const queryToLikePost = async (req, res, next) => {
     }
 }
 
-// const noDupeLike = (req, res, next) => {
-//     let data = req.postLikes
-//     console.log('this is data', data);
+const noDupeLike = (req, res, next) => {
+    let data = req.postLikes
+    // console.log('this is data', data);
 
-//     data.forEach(ele => {
-//         console.log("this is ele", ele.liker_username);
-//         console.log('this is body', req.body.liker_username);
+    data.forEach(ele => {
+        // console.log("this is ele", data[1].liker_username);
+        // console.log('this is body', req.body.liker_username);
 
-//         // if (!data.includes({
-//         //         liker_username: req.body.liker_username
-//         //     })) {
-//         //     next();
-//         // } else {
-//         //     res.json({
-//         //         status: 'failure'
-//         //     })
-//         // }
-//         if (ele.liker_username === req.body.liker_username) {
-//             res.json({
-//                 status: 'failure'
-//             })
-//         }
-//     });
-//     next();
-// }
+        if (ele.liker_username === req.body.liker_username) {
+            res.json({
+                status: 'failure'
+            })
+        }
+    });
+    next()
+}
 
 //middleware to send the information to the server is user successfully liked a pot
 const likedPost = (req, res) => {
+    console.log(req.body);
+
     res.json({
         status: 'success',
         message: 'Success, request sent',
@@ -117,7 +134,7 @@ const likedPost = (req, res) => {
     })
 }
 
-router.post('/posts/:post_id', queryToLikePost, likedPost)
+router.post('/posts/:post_id', getLikesByPostID, queryToLikePost, noDupeLike, likedPost)
 
 //this route will allow users to delete their likes on a post
 //by using the post_id
@@ -146,7 +163,31 @@ const deletedLike = (req, res) => {
     })
 }
 
-router.delete('/posts/:post_id/:liker_username', getLikesByPostID, validatePostQuery, deletePostLikeQuery, deletedLike)
+router.delete('/posts/:post_id/:liker_username', getLikesByPostID, validatePostQuery, deletePostLikeQuery, deletedLike);
+
+//retrieve the number of times a picture is liked by all users
+router.get('/pictures/times_liked', async (req, res) => {
+    try {
+        let insertQuery = `
+        SELECT pictures.id AS picture_id, COUNT(pictures.id) AS times_liked
+        from pictures
+        JOIN likes ON pictures.id = likes.picture_id
+        GROUP BY pictures.id
+        ORDER BY times_liked DESC
+        `
+        let liked = await db.any(insertQuery)
+        res.json({
+            status: 'success',
+            message: 'Success, request sent',
+            body: liked,
+        })
+    } catch (error) {
+        res.json({
+            message: 'There was an error the retrieving data'
+        })
+        console.log(error);
+    }
+});
 
 //this middleware performs the query to the database for the endpoint to get picture by picture id
 //it outputs the returned promise
