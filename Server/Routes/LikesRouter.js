@@ -119,6 +119,34 @@ const likedPost = (req, res) => {
 
 router.post('/posts/:post_id', queryToLikePost, likedPost)
 
+//this route will allow users to delete their likes on a post
+//by using the picture_id
+const deletePostLikeQuery = async (req, res, next) => {
+    postId = req.params.post_id;
+    likerUsername = req.params.liker_username;
+    let deleteQuery = `DELETE FROM likes WHERE post_id = $1 AND liker_username = $2`
+    try {
+        req.delete = await db.none(deleteQuery, [postId, likerUsername])
+        next()
+    } catch (error) {
+        res.json({
+            status: 'failure',
+            message: 'you took a wrong turn'
+        })
+    }
+
+}
+
+const deletedLike = (req, res) => {
+    res.json({
+        status: 'success',
+        message: 'Success, request sent',
+        body: req.delete
+    })
+}
+
+router.delete('/posts/:post_id/:liker_username', getLikesByPostID, validatePostQuery, deletePostLikeQuery, deletedLike)
+
 //this middleware performs the query to the database for the endpoint to get picture by picture id
 //it outputs the returned promise
 const getLikesByPictureID = async (req, res, next) => {
