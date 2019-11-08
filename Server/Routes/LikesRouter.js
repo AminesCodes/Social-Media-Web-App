@@ -278,7 +278,7 @@ const displayPicQuery = (req, res) => {
 //router endpoint for the query to get likes by picture id
 router.get('/pictures/:picture_id', getLikesByPictureID, validatePicQuery, displayPicQuery);
 
-//router that gets the posts that a user liked
+//router that gets the pictures that a user liked
 router.get('/pictures/interest/:liker_username', async (req, res) => {
     let likerUsername = req.params.liker_username;
     try {
