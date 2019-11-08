@@ -8,7 +8,13 @@ const {db} = require('../../Database/database'); //connected db instance
 // GET ALL USERS FROM THE DATABASE
 const getAllUsers = async (request, response, next) => {
     try {
-        let allUsers = await db.any(`SELECT username, firstname, lastname, TO_CHAR(dob, 'dd/mm/yyyy') AS dob, TO_CHAR(signing_date, 'dd/mm/yyyy') AS signing_date FROM users`);
+        const requestQuery = `
+        SELECT username, firstname, 
+                lastname, 
+                TO_CHAR(dob, 'dd/mm/yyyy') AS dob, 
+                TO_CHAR(signing_date, 'dd/mm/yyyy') AS signing_date
+            FROM users`;
+        const allUsers = await db.any(requestQuery);
         request.allUsers = allUsers; // Implement all users into the request
         next();
     } catch(err) {
@@ -58,11 +64,13 @@ const checkValidBody = (request, response, next) => {
         });
     } else {
         // Implements the body data to the request:
-        request.username = username;
+        request.username = username.toLowerCase();
         request.firstName = firstName;
         request.lastName = lastName;
         request.dob = dob;
         request.password = password;
+
+        request.UserToLookFor = username.toLowerCase();
 
         next();
     }
@@ -73,10 +81,14 @@ const checkValidBody = (request, response, next) => {
 const checkIfUsernameExists = async (request, response, next) => {
     try {
         const requestQuery = `
-        SELECT username, firstname, lastname, TO_CHAR(dob, 'dd/mm/yyyy') AS dob, TO_CHAR(signing_date, 'dd/mm/yyyy') AS signing_date , user_password
-        FROM users
-        WHERE username = $1`
-        const user = await db.one(requestQuery, [request.username]);
+        SELECT username, firstname, 
+                lastname, 
+                TO_CHAR(dob, 'dd/mm/yyyy') AS dob, 
+                TO_CHAR(signing_date, 'dd/mm/yyyy') AS signing_date , 
+                user_password
+            FROM users
+            WHERE username = $1`
+        const user = await db.one(requestQuery, [request.UserToLookFor]);
         request.userExists = true; // Validates that the user exists
         request.targetUser = user; // Implement the target user to the request
         request.secureTargetUser = {
@@ -155,19 +167,20 @@ router.post('/', checkValidBody, checkIfUsernameExists, addUser, checkIfUsername
 
 // CHECK AUTHENTICATION REQUEST BODY
 const checkValidAuthenticationBody = (request, response, next) => {
-    const username = request.body.username;
-    const password = request.body.password;
+    const username = request.body.loggedUsername;
+    const password = request.body.loggedPassword;
   
     if (!username || !password) {
         response.status(400); // BAD REQUEST
         response.json({
             status: 'failed',
-            message: 'Missing information'
+            message: 'Missing authentication information'
         });
     } else {
         // Implements the body data to the request:
-        request.username = username;
-        request.password = password;
+        request.loggedUsername = username.toLowerCase();
+        request.loggedPassword = password;
+        request.UserToLookFor = username.toLowerCase();
 
         next();
     }
@@ -176,11 +189,17 @@ const checkValidAuthenticationBody = (request, response, next) => {
 
 // AUTHENTICATION
 const authenticateUser = (request, response, next) => {
-
     if (request.userExists) {
-        if (request.targetUser.username === request.username 
-            && request.targetUser.user_password === request.password) {
-                request.loggedUser = request.targetUser;
+        // console.log(request.targetUser, request.loggedUsername, request.loggedPassword)
+        if (request.targetUser.username === request.loggedUsername 
+            && request.targetUser.user_password === request.loggedPassword) {
+                request.secureTargetUser = {
+                    username: request.targetUser.username,
+                    firstname: request.targetUser.firstname,
+                    lastname: request.targetUser.lastname,
+                    dob: request.targetUser.dob,
+                    signing_date: request.targetUser.signing_date
+                };
                 next()
         } else {
             //response.status(401) // Unauthorized
@@ -199,103 +218,224 @@ const authenticateUser = (request, response, next) => {
 }
 
 // LOGGING ROUTE
-router.get('/logging', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, getConcernedUser);
+// NOT A REAL PATCH, JUST TO HAVE A ABILITY TO ACCEPT A BODY USING AXIOS
+router.patch('/logging', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, getConcernedUser);
 
-//   const userToLog = (request, response) => {
-//     if (request.userExists) {
-//       response.json({
-//         status: 'success',
-//         message: request.userToLog
-//       })
-//     } else {
-//       response.json({
-//         status: 'failed',
-//         message: 'User does not exist'
-//       })
-//     }
-//   }
+
+// 
+const checkValidRoute = (request, response, next) => {
+    const username = request.params.username;
+    if (!username) {
+      response.status(404);
+      response.json({
+        status: 'failed',
+        message: 'Invalid route'
+      });
+    } else {
+      request.username = username.toLowerCase();
+      next();
+    }
+}
   
-//   // NOT A REAL PATCH, JUST TO HAVE A ABILITY TO ACCEPT A BODY
-//   // LOGIN A USER
-//   router.patch('/login', checkValidBody, getAllUsers, checkIfUsernameExists, userToLog);
+// 
+const checkPatchBody = (request, response, next) => {
+    console.log("line 232", request.body)
+    if (!request.body.username 
+        && !request.body.firstname 
+        && !request.body.lastname 
+        && !request.body.dob 
+        && !request.body.password) {
+            response.status(400); // BAD REQUEST
+            response.json({
+                status: 'failed',
+                message: 'Missing information, nothing to update'
+            });
+    } else {
+        if (request.body.username) {
+            request.body.username = (request.body.username).toLowerCase()
+        }
+        if (request.body.firstname) {
+            request.body.firstname = formateName(request.body.firstname);
+        }
+        if (request.body.lastname) {
+            request.body.lastname = formateName(request.body.lastname);
+        }
+        next()
+    }
+}
+
+
+// UPDATE USER
+const updateUser = async (request, response, next) => {
+    console.log('\nUPDATE USER MIDDLEWARE (line 260)', request.secureTargetUser);
+    console.log(request.body)
+    if (request.body.password) {
+        try {
+            let updateQuery = `UPDATE users 
+            SET user_password = $2 
+            WHERE username = $1`
+            await db.none(updateQuery, [request.secureTargetUser.username, request.body.password]);
+        } catch (err) {
+            console.log(err);
+            response.status(500)
+            response.json({
+              status: 'failed',
+              message: 'Something went wrong!'
+            });
+            return;
+        }
+    }
+
+    if (request.body.firstname) {
+        try {
+            let updateQuery = `UPDATE users 
+            SET firstname = $2 
+            WHERE username = $1`
+            await db.none(updateQuery, [request.secureTargetUser.username, request.body.firstname]);
+        } catch (err) {
+            console.log(err);
+            response.status(500)
+            response.json({
+              status: 'failed',
+              message: 'Something went wrong!'
+            });
+            return;
+        }
+    }
+
+    if (request.body.lastname) {
+        try {
+            let updateQuery = `UPDATE users 
+            SET lastname = $2 
+            WHERE username = $1`
+            await db.none(updateQuery, [request.secureTargetUser.username, request.body.lastname]);
+        } catch (err) {
+            console.log(err);
+            response.status(500)
+            response.json({
+              status: 'failed',
+              message: 'Something went wrong!'
+            });
+            return;
+        }
+    }
+
+    if (request.body.dob) {
+        try {
+            let updateQuery = `UPDATE users 
+            SET dob = $2 
+            WHERE username = $1`
+            await db.none(updateQuery, [request.secureTargetUser.username, request.body.dob]);
+        } catch (err) {
+            console.log(err);
+            response.status(500)
+            response.json({
+              status: 'failed',
+              message: 'Something went wrong!'
+            });
+            return;
+        }
+    }
+
+    if (request.body.username) {
+        try {
+            let updateQuery = `UPDATE users 
+            SET username = $2 
+            WHERE username = $1`
+            await db.none(updateQuery, [request.secureTargetUser.username, request.body.username]);
+        } catch (err) {
+            console.log(err);
+            response.status(500)
+            response.json({
+              status: 'failed',
+              message: 'Something went wrong!'
+            });
+            return;
+        }
+    }
+    next();
+}
+
+
+// RETRIEVING the updated user
+const getUpdatedUser = async (request, response) => {
+    const requestQuery = `
+        SELECT username, firstname, lastname, TO_CHAR(dob, 'dd/mm/yyyy') AS dob, TO_CHAR(signing_date, 'dd/mm/yyyy') AS signing_date
+        FROM users
+        WHERE username = $1`
+    if (request.body.username) {
+        try {
+            const user = await db.one(requestQuery, [request.body.username]);
+            response.json({
+                status: 'success',
+                message: 'Updated user',
+                body: user
+            });
+        } catch (err) {
+            console.log(err);
+            response.status(500)
+            response.json({
+              status: 'failed',
+              message: 'Something went wrong!'
+            });
+        }
+    } else {
+        try {
+            const user = await db.one(requestQuery, [request.secureTargetUser.username]);
+            response.json({
+                status: 'success',
+                message: 'Updated user',
+                body: user
+            });
+        } catch (err) {
+            console.log(err);
+            response.status(500)
+            response.json({
+              status: 'failed',
+              message: 'Something went wrong!'
+            });
+        }
+    }
+}
+  
+
+// EXPECTING A BODY WITH {firstname, lastname, age}
+router.patch('/:username', checkValidRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, checkPatchBody, updateUser, getUpdatedUser);
   
   
-//   const checkValidRoute = (request, response, next) => {
-//     const id = parseInt(request.params.userID);
-//     if (isNaN(id)) {
-//       response.status(500);
-//       response.json({
-//         status: 'failed',
-//         message: 'Invalid route'
-//       });
-//     } else {
-//       request.id = id;
-//       next();
-//     }
-//   }
+// 
+const deleteUser = async (request, response) => {
+    try {
+      let deleteQuery = `DELETE FROM users WHERE username = $1`
+      await db.none(deleteQuery, [request.secureTargetUser.username]);
+      response.json({
+        status: 'success',
+        message: 'Deleted user',
+        body: request.secureTargetUser
+      })
+    } catch (err) {
+      console.log(err);
+      response.json({
+        status: 'failed',
+        message: 'Something went wrong'
+      })
+    }
+  }
+
+
+// DELETING A USER
+router.delete('/:username', checkValidRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, deleteUser);
   
-  
-//   const getUserByID = async (request, response, next) => {
-//     try {
-//       const targetUser = await db.one('SELECT * FROM users WHERE id = $1', [request.id]);
-//       if (targetUser.id) {
-//         request.targetUser = targetUser;
-//         next();
-//       } 
-//     } catch (err) {
-//       console.log(err);
-//       response.json({
-//         status: 'failed',
-//         message: 'Something went wrong or inexistent user'
-//       });
-//     }
-//   }
-  
-//   const updateUser = async (request, response, next) => {
-//     try {
-//       let updateQuery = `UPDATE users 
-//       SET firstname = $2, lastname = $3, age = $4 
-//       WHERE id = $1`
-//       await db.none(updateQuery, [request.id, request.firstName, request.lastName, request.age]);
-//       next();
-//     } catch (err) {
-//       console.log(err);
-//       response.json({
-//         status: 'failed',
-//         message: 'Something went wrong'
-//       });
-//     }
-//   }
-  
-//   const returnUserByID = (request, response) => {
-//     response.json({
-//       status: 'success',
-//       message: request.targetUser
-//     })
-//   }
-//   // EXPECTING A BODY WITH {firstname, lastname, age}
-//   router.put('/:userID', checkValidRoute, checkValidBody, getUserByID, updateUser, getUserByID, returnUserByID);
-  
-  
-//   const deleteUser = async (request, response) => {
-//     try {
-//       let deleteQuery = `DELETE FROM users WHERE id = $1`
-//       await db.none(deleteQuery, [request.id]);
-//       response.json({
-//         status: 'success',
-//         message: request.targetUser
-//       })
-//     } catch (err) {
-//       console.log(err);
-//       response.json({
-//         status: 'failed',
-//         message: 'Something went wrong'
-//       })
-//     }
-//   }
-//   // DELETING A USER
-//   router.delete('/:userID', checkValidRoute, getUserByID, deleteUser);
-  
+
+//
+const getTargetUser = (request, response, next) => {
+    request.UserToLookFor = request.username;
+    next();
+}
+
+
+// GET USER BY USERNAME
+router.get('/:username', checkValidRoute, getTargetUser, checkIfUsernameExists, getConcernedUser);
   
 
 module.exports = router;
