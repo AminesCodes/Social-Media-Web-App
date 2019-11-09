@@ -89,6 +89,7 @@ const getLikesByPostID = async (req, res, next) => {
         SELECT * FROM likes JOIN users ON users.username = likes.liker_username WHERE post_id = $1
         `;
         req.postLikes = await db.any(insertQuery, [postId]);
+        delete req.postLikes.user_password;
         next();
     } catch (error) {
         res.status(500);
@@ -103,11 +104,15 @@ const getLikesByPostID = async (req, res, next) => {
 const validatePostQuery = (req, res, next) => {
     let body = req.postLikes
     // console.log(body);
-    res.status(404);
-    body.length === 0 ? res.json({
-        status: 'failed',
-        message: 'Post doesn\'t exist'
-    }) : next();
+    if (body.length === 0) {
+        res.status(404);
+        res.json({
+            status: 'failed',
+            message: 'Post doesn\'t exist'
+        })
+    } else {
+        next();
+    }
 }
 //this function sends the valid query results to server
 const displayPostQuery = (req, res) => {
@@ -146,7 +151,7 @@ const queryToLikePost = async (req, res, next) => {
         INSERT INTO likes (liker_username,post_id)
             VALUES($1, $2)`
 
-        req.postLiker = await db.none(insertQuery, [req.body.liker_username, req.body.post_id])
+        await db.none(insertQuery, [req.body.liker_username, req.body.post_id])
         next()
     } catch (error) {
         res.status(500);
@@ -157,6 +162,23 @@ const queryToLikePost = async (req, res, next) => {
         console.log(error);
     }
 }
+const noDupeLike = (req, res, next) => {
+    let body = req.postLikes;
+    let postAlreadyLiked = false;
+    body.forEach(el => {
+        if (el.liker_username === req.body.loggedUsername) {
+            postAlreadyLiked = true;
+            res.json({
+                status: 'failure',
+                message: 'post already liked'
+            })
+        }
+    });
+    if (!postAlreadyLiked) {
+        next();
+    }
+}
+
 // CHECK AUTHENTICATION REQUEST BODY
 const checkValidAuthenticationBody = (request, response, next) => {
     const username = request.body.loggedUsername;
@@ -229,7 +251,7 @@ const likeRequestSent = (req, res) => {
     });
 }
 //router endpoint to create a like on a post
-router.post('/posts/:post_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, queryToLikePost, likeRequestSent);
+router.post('/posts/:post_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, getLikesByPostID, validatePostQuery, noDupeLike, queryToLikePost, likeRequestSent);
 
 //this route will allow users to delete their likes on a post
 //by using the post_id
@@ -237,7 +259,7 @@ const deletePostLikeQuery = async (req, res, next) => {
     postId = req.params.post_id;
     let deleteQuery = `DELETE FROM likes WHERE post_id = $1 AND liker_username = $2`
     try {
-        await db.none(deleteQuery, [postId, req.body.liker_username])
+        await db.none(deleteQuery, [postId, req.body.loggedUsername])
         next()
     } catch (error) {
         res.status(500);
@@ -258,7 +280,7 @@ const deletedLike = (req, res) => {
     });
 }
 //router endpoint to delete a post by a user
-router.put('/posts/:post_id/delete', getLikesByPostID, validatePostQuery, deletePostLikeQuery, deletedLike);
+router.put('/posts/:post_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, getLikesByPostID, validatePostQuery, deletePostLikeQuery, deletedLike);
 
 //retrieves the number of times a picture is liked by all users
 router.get('/pictures/times_liked', async (req, res) => {
@@ -321,6 +343,7 @@ const getLikesByPictureID = async (req, res, next) => {
         SELECT * FROM likes JOIN users ON users.username = likes.liker_username WHERE picture_id = $1
         `;
         req.picLikes = await db.any(insertQuery, [picId]);
+        delete req.picLikes.user_password;
         next();
     } catch (error) {
         res.status(500);
@@ -333,11 +356,16 @@ const getLikesByPictureID = async (req, res, next) => {
 }
 // middleware that takes in the promise and checks if it contains data
 const validatePicQuery = (req, res, next) => {
-    res.status(404);
-    req.picLikes.length === 0 ? res.json({
-        status: 'failure',
-        message: 'Picture doesn\'t exist'
-    }) : next();
+    if (req.picLikes.length === 0) {
+        res.status(404);
+        res.json({
+            status: 'failure',
+            message: 'Picture doesn\'t exist'
+        })
+    } else {
+        next();
+    }
+
 }
 
 //this middleware sends the valid query results to server after the checks
@@ -391,7 +419,25 @@ const queryToLikePicture = async (req, res, next) => {
     }
 }
 
-router.post('/pictures/:picture_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, queryToLikePicture, likeRequestSent);
+// no duplicate pictures like
+const noDupePicLike = (req, res, next) => {
+    let body = req.picLikes;
+    let picAlreadyLiked = false;
+    body.forEach(el => {
+        if (el.liker_username === req.body.loggedUsername) {
+            picAlreadyLiked = true;
+            res.json({
+                status: 'failure',
+                message: 'picture already liked'
+            })
+        }
+    });
+    if (!picAlreadyLiked) {
+        next();
+    }
+}
+
+router.post('/pictures/:picture_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, getLikesByPictureID, validatePicQuery, noDupePicLike, queryToLikePicture, likeRequestSent);
 
 //this route will allow users to delete their likes on pictures
 //by using the picture_id
@@ -399,7 +445,7 @@ const deletePicLikeQuery = async (req, res, next) => {
     picId = req.params.picture_id;
     let deleteQuery = `DELETE FROM likes WHERE picture_id = $1 AND liker_username = $2`
     try {
-        await db.none(deleteQuery, [picId, req.body.liker_username]);
+        await db.none(deleteQuery, [picId, req.body.loggedUsername]);
         next();
     } catch (error) {
         res.status(500);
@@ -410,6 +456,6 @@ const deletePicLikeQuery = async (req, res, next) => {
     }
 }
 
-router.put('/pictures/:picture_id/delete', getLikesByPictureID, validatePicQuery, deletePicLikeQuery, deletedLike);
+router.put('/pictures/:picture_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, getLikesByPictureID, validatePicQuery, deletePicLikeQuery, deletedLike);
 
 module.exports = router;
