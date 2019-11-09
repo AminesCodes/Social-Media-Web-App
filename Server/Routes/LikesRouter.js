@@ -18,6 +18,7 @@ router.get('/', async (req, res) => {
             body: post
         });
     } catch (error) {
+        res.status(500)
         res.json({
             status: 'failure',
             message: 'There was an error, try again'
@@ -43,7 +44,9 @@ router.get('/posts/times_liked', async (req, res) => {
             body: liked,
         });
     } catch (error) {
+        res.status(500);
         res.json({
+            status: 'failure',
             message: 'There was an error the retrieving data'
         });
         console.log(error);
@@ -68,7 +71,9 @@ router.get('/posts/popular', async (req, res) => {
             body: num1
         });
     } catch (error) {
+        res.status(500);
         res.json({
+            status: 'failure',
             message: 'There was an error sending request'
         })
         console.log(error);
@@ -86,6 +91,7 @@ const getLikesByPostID = async (req, res, next) => {
         req.postLikes = await db.any(insertQuery, [postId]);
         next();
     } catch (error) {
+        res.status(500);
         res.json({
             status: 'failure',
             message: 'There was an error'
@@ -97,6 +103,7 @@ const getLikesByPostID = async (req, res, next) => {
 const validatePostQuery = (req, res, next) => {
     let body = req.postLikes
     // console.log(body);
+    res.status(404);
     body.length === 0 ? res.json({
         status: 'failed',
         message: 'Post doesn\'t exist'
@@ -125,6 +132,7 @@ router.get('/posts/interest/:liker_username', async (req, res) => {
         })
 
     } catch (error) {
+        res.status(500);
         res.json({
             status: 'failure',
             message: `You took a wrong turn`
@@ -142,6 +150,7 @@ const queryToLikePost = async (req, res, next) => {
         req.postLiker = await db.none(insertQuery, [req.body.liker_username, req.body.post_id])
         next()
     } catch (error) {
+        res.status(500);
         res.json({
             status: 'failure',
             message: 'There was an error sending like request'
@@ -151,9 +160,9 @@ const queryToLikePost = async (req, res, next) => {
 }
 
 //middleware to send the information to the server is user successfully liked a pot
-const likedPost = (req, res) => {
+const likeRequestSent = (req, res) => {
     console.log(req.body);
-
+    res.status(200);
     res.json({
         status: 'success',
         message: 'request sent',
@@ -161,7 +170,7 @@ const likedPost = (req, res) => {
     });
 }
 //router endpoint to create a like on a post
-router.post('/posts/:post_id', queryToLikePost, likedPost);
+router.post('/posts/:post_id', queryToLikePost, likeRequestSent);
 
 //this route will allow users to delete their likes on a post
 //by using the post_id
@@ -173,6 +182,7 @@ const deletePostLikeQuery = async (req, res, next) => {
         req.delete = await db.none(deleteQuery, [postId, likerUsername])
         next()
     } catch (error) {
+        res.status(500);
         res.json({
             status: 'failure',
             message: 'you took a wrong turn'
@@ -183,6 +193,7 @@ const deletePostLikeQuery = async (req, res, next) => {
 
 //middleware that will send to the server information if the delete request was successful
 const deletedLike = (req, res) => {
+    res.status(200);
     res.json({
         status: 'success',
         message: 'request sent',
@@ -209,7 +220,9 @@ router.get('/pictures/times_liked', async (req, res) => {
             body: liked,
         })
     } catch (error) {
+        res.status(500);
         res.json({
+            status: 'failure',
             message: 'There was an error the retrieving data'
         })
         console.log(error);
@@ -233,6 +246,7 @@ router.get('/pictures/popular', async (req, res) => {
             body: num1
         });
     } catch (error) {
+        res.status(500);
         res.json({
             status: 'failure',
             message: 'There was an error sending request'
@@ -252,6 +266,7 @@ const getLikesByPictureID = async (req, res, next) => {
         req.picLikes = await db.any(insertQuery, [picId]);
         next();
     } catch (error) {
+        res.status(500);
         res.json({
             status: 'failure',
             message: 'There was an error'
@@ -261,6 +276,7 @@ const getLikesByPictureID = async (req, res, next) => {
 }
 // middleware that takes in the promise and checks if it contains data
 const validatePicQuery = (req, res, next) => {
+    res.status(404);
     req.picLikes.length === 0 ? res.json({
         status: 'failure',
         message: 'Picture doesn\'t exist'
@@ -269,6 +285,7 @@ const validatePicQuery = (req, res, next) => {
 
 //this middleware sends the valid query results to server after the checks
 const displayPicQuery = (req, res) => {
+    res.status(200);
     res.json({
         status: 'Success',
         message: 'Success. Retrieved all the likes for picture',
@@ -290,6 +307,7 @@ router.get('/pictures/interest/:liker_username', async (req, res) => {
         });
 
     } catch (error) {
+        res.status(500);
         res.json({
             status: 'failure',
             message: `You took a wrong turn`
@@ -308,6 +326,7 @@ const queryToLikePicture = async (req, res, next) => {
         req.picLiker = await db.none(insertQuery, [req.body.liker_username, req.body.picture_id]);
         next();
     } catch (error) {
+        res.status(500);
         res.json({
             status: 'failure',
             message: 'There was an error sending like request'
@@ -316,16 +335,7 @@ const queryToLikePicture = async (req, res, next) => {
     }
 }
 
-//middleware that sends to the server the successful request by the user
-const likedPicture = (req, res) => {
-    res.json({
-        status: 'success',
-        message: 'Success, request sent',
-        body: req.body
-    });
-}
-
-router.post('/pictures/:picture_id', queryToLikePicture, likedPicture);
+router.post('/pictures/:picture_id', queryToLikePicture, likeRequestSent);
 
 //this route will allow users to delete their likes on pictures
 //by using the picture_id
@@ -337,6 +347,7 @@ const deletePicLikeQuery = async (req, res, next) => {
         req.delete = await db.none(deleteQuery, [picId, likerUsername]);
         next();
     } catch (error) {
+        res.status(500);
         res.json({
             status: 'failure',
             message: 'you took a wrong turn'
