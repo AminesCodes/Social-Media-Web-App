@@ -202,14 +202,14 @@ const authenticateUser = (request, response, next) => {
                 };
                 next()
         } else {
-            //response.status(401) // Unauthorized
+            response.status(401) // Unauthorized
             response.json({
                 status: 'failed',
                 message: 'Bad combination username/password'
             })
         }
     } else {
-        //response.status(401) // Unauthorized
+        response.status(401) // Unauthorized
         response.json({
             status: 'failed',
             message: 'User Does not exist'
