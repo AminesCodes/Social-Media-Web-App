@@ -333,8 +333,9 @@ const deleteAlbum = async (request, response) => {
     }
 }
 
-// DELETING AN ALBUM
-router.delete('/:albumID', validateRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, checkExistingAlbum, deleteAlbum);
+// DELETING AN ALBUM 
+// USE OF PUT TO ACCEPT A BODY IN THE REQUEST
+router.put('/:albumID/delete', validateRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, checkExistingAlbum, deleteAlbum);
 
 
 module.exports = router;

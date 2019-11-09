@@ -332,7 +332,8 @@ const deletePost = async (request, response) => {
 }
 
 // // DELETING A POST
-router.delete('/:postID', validateRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, checkExistingPost, deletePost);
+// USE OF PUT TO ACCEPT A BODY IN THE REQUEST
+router.put('/:postID/delete', validateRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, checkExistingPost, deletePost);
 
 
 
