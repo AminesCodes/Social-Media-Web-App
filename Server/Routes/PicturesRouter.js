@@ -5,6 +5,30 @@ const router = express.Router()
 const {db} = require('../../Database/database')
 
 //DB Query functions
+const getPictureById = async (req, res) => {
+  try {
+    const requestQuery = `
+      SELECT picture_link, picture_date, album_id, comment, comment_date, liker_username
+      FROM pictures
+      JOIN comments ON (comments.picture_id = pictures.id)
+      JOIN likes ON (likes.picture_id = pictures.id)
+      WHERE album_id = $1`
+    const pic = await db.any(requestQuery, [req.params.pictureid])
+    res.json({
+      status: 'succes',
+      message: `retrieved picture with ID ${req.params.pictureid}`,
+      body: pic
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500)
+    res.send({
+        status: 'failed',
+        message: 'Something went wrong'
+    })
+  }
+}
+
 const getPicturesByAlbum = async (req, res) => {
   try {
     const requestQuery = `
