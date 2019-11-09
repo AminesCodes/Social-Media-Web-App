@@ -42,7 +42,7 @@ CREATE TABLE pictures
 (
     id SERIAL PRIMARY KEY,
     album_id INT REFERENCES albums (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    picure_link VARCHAR NOT NULL,
+    picture_link VARCHAR NOT NULL,
     picture_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
