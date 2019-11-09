@@ -57,11 +57,10 @@ router.get('/posts/times_liked', async (req, res) => {
 router.get('/posts/popular', async (req, res) => {
     try {
         let insertQuery = `
-        SELECT * from users
-        JOIN posts ON users.username = posts.poster_username
+        SELECT poster_username,body, id from posts
         WHERE posts.id = (
             SELECT posts.id FROM posts JOIN likes ON posts.id = likes.post_id 
-            GROUP BY posts.id ORDER BY COUNT(posts.body) DESC LIMIT 1
+            GROUP BY posts.id ORDER BY COUNT(posts.body) DESC, posts.id DESC LIMIT 1
         )
         `;
         let num1 = await db.any(insertQuery)
@@ -86,7 +85,7 @@ const getLikesByPostID = async (req, res, next) => {
     let postId = req.params.post_id;
     try {
         let insertQuery = `
-        SELECT * FROM likes JOIN users ON users.username = likes.liker_username WHERE post_id = $1
+        SELECT poster_username,liker_username,body FROM likes JOIN posts ON post_id = posts.id WHERE post_id =$1
         `;
         req.postLikes = await db.any(insertQuery, [postId]);
         delete req.postLikes.user_password;
@@ -126,9 +125,10 @@ const displayPostQuery = (req, res) => {
 router.get('/posts/:post_id', getLikesByPostID, validatePostQuery, displayPostQuery)
 
 //get the posts that a user liked
-router.get('/posts/interest/', async (req, res) => {
+//use liker username
+router.get('/posts/interest/:user_id', async (req, res) => {
     try {
-        let specPost = await db.any('SELECT * FROM likes WHERE liker_username = $1', [req.body.likerUsername])
+        let specPost = await db.any('SELECT liker_username,body,poster_username FROM likes JOIN posts ON post_id = posts.id WHERE liker_username = $1', [req.params.user_id])
         res.json({
             status: 'success',
             message: 'retrieved the likes',
@@ -312,7 +312,7 @@ router.get('/pictures/times_liked', async (req, res) => {
 router.get('/pictures/popular', async (req, res) => {
     try {
         let insertQuery = `
-        SELECT * from pictures 
+        SELECT username, poster_username, firstname, lastname, body from pictures
         WHERE pictures.id = (
             SELECT pictures.id FROM pictures JOIN likes ON pictures.id = likes.picture_id 
             GROUP BY pictures.id ORDER BY COUNT(pictures.id) DESC LIMIT 1
@@ -340,7 +340,7 @@ const getLikesByPictureID = async (req, res, next) => {
     let picId = req.params.picture_id;
     try {
         let insertQuery = `
-        SELECT * FROM likes JOIN users ON users.username = likes.liker_username WHERE picture_id = $1
+        SELECT liker_username, username, firstname, lastname FROM likes JOIN users ON users.username = likes.liker_username JOIN pictures ON picture_id = pictures.id
         `;
         req.picLikes = await db.any(insertQuery, [picId]);
         delete req.picLikes.user_password;
@@ -381,9 +381,9 @@ const displayPicQuery = (req, res) => {
 router.get('/pictures/:picture_id', getLikesByPictureID, validatePicQuery, displayPicQuery);
 
 //router that gets the pictures that a user liked
-router.get('/pictures/interest', async (req, res) => {
+router.get('/pictures/interest/:liker_username', async (req, res) => {
     try {
-        let specPost = await db.any('SELECT * FROM likes WHERE liker_username = $1', [req.body.likerUsername]);
+        let specPost = await db.any('SELECT liker_username,owner_username,picture_link FROM likes JOIN pictures ON picture_id = pictures.id JOIN albums ON album_id = albums.id WHERE liker_username = $1', [req.params.liker_username]);
         res.json({
             status: 'success',
             message: 'retrieved all likes',
