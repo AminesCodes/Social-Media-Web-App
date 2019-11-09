@@ -5,6 +5,30 @@ const router = express.Router()
 const {db} = require('../../Database/database')
 
 //DB Query functions
+const getPictureById = async (req, res) => {
+  try {
+    const requestQuery = `
+      SELECT picture_link, picture_date, album_id, comment, comment_date, liker_username
+      FROM pictures
+      JOIN comments ON (comments.picture_id = pictures.id)
+      JOIN likes ON (likes.picture_id = pictures.id)
+      WHERE pictures.id = $1`
+    const pic = await db.any(requestQuery, [req.params.pictureid])
+    res.json({
+      status: 'success',
+      message: `retrieved picture with ID ${req.params.pictureid}`,
+      body: pic
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500)
+    res.send({
+        status: 'failed',
+        message: 'Something went wrong'
+    })
+  }
+}
+
 const getPicturesByAlbum = async (req, res) => {
   try {
     const requestQuery = `
@@ -31,11 +55,19 @@ const getPicturesByAlbum = async (req, res) => {
 
 const postPicture = async (req, res) => {
   try {
+    const today = new Date()
+    //const date = `${today.getFullYear()}-${(today.getMonth() + 1)}-${today.getDay()}`
+    const date = today.toLocaleDateString()
     const insertQuery = `
       INSERT INTO pictures (album_id, picture_link)
-      VALUES $1, $2
+      VALUES($1, $2)
     `
     await db.none(insertQuery, [req.params.albumid, req.body.pictureLink])
+    res.json({
+      status: 'success',
+      message: `posted picture to album with ID ${req.params.albumid}`,
+      body: { albumId: req.params.albumid, pictureLink: req.body.pictureLink, pictureDate: date }
+    })
   } catch (err) {
     console.log(err)
     res.status(500)
@@ -52,6 +84,10 @@ const deletePicture = async (req, res) => {
       DELETE from pictures WHERE id = $1
     `
     await db.none(deleteQuery, [req.params.pictureid])
+    res.json({
+      status:'success',
+      message: `deleted picture with ID ${req.params.pictureid}`
+    })
   } catch (err) {
     res.status(500)
     res.send({
@@ -63,8 +99,8 @@ const deletePicture = async (req, res) => {
 
 //Authentication
 const checkValidAuthenticationBody = (req, res, next) => {
-    const username = request.body.loggedUsername
-    const password = request.body.loggedPassword
+    const username = req.body.loggedUsername
+    const password = req.body.loggedPassword
     if (!username || !password) {
         res.status(400)
         res.json({
@@ -78,7 +114,7 @@ const checkValidAuthenticationBody = (req, res, next) => {
     }
 }
 
-const checkIfUsernameExists = async (request, response, next) => {
+const checkIfUsernameExists = async (req, res, next) => {
     try {
         const user = await db.one('SELECT * FROM users WHERE username = $1', [req.loggedUsername])
         req.userExists = true
@@ -103,7 +139,7 @@ const authenticateUser = (req, res, next) => {
   if (req.userExists) {
       if (req.targetUser.username === req.loggedUsername
        && req.targetUser.user_password === req.loggedPassword) {
-              next()
+        next()
       } else {
           res.status(401)
           res.json({
@@ -121,8 +157,9 @@ const authenticateUser = (req, res, next) => {
 }
 
 //Routes
-router.get('/:albumid', getPicturesByAlbum)
-router.post('/:albumid', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, postPicture)
-router.delete('/:pictureid', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, deletePicture)
+router.get('/albums/:albumid', getPicturesByAlbum)
+router.get('/:pictureid', getPictureById)
+router.post('/albums/:albumid', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, postPicture)
+router.put('/delete/:pictureid', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, deletePicture)
 
 module.exports = router;
