@@ -8,8 +8,10 @@ const {db} = require('../../Database/database')
 const getPicturesByAlbum = async (req, res) => {
   try {
     const requestQuery = `
-      SELECT picture_link, picture_date
+      SELECT picture_link, picture_date, album_id, comment, comment_date, liker_username
       FROM pictures
+      JOIN comments ON (comments.picture_id = pictures.id)
+      JOIN likes ON (likes.picture_id = pictures.id)
       WHERE album_id = $1`
     const picsFromAlbum = await db.any(requestQuery, [req.params.albumid])
     res.json({
