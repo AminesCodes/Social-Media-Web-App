@@ -4,38 +4,95 @@ const router = express.Router();
 //pg-promise request
 const {db} = require('../../Database/database'); //connected db instance
 
+// CHECK AUTHENTICATION REQUEST BODY
+const checkValidAuthenticationBody = (request, response, next) => {
+    const username = request.body.loggedUsername;
+    const password = request.body.loggedPassword;
 
+    if (!username || !password) {
+        response.status(400); // BAD REQUEST
+        response.json({
+            status: 'failed',
+            message: 'Missing authentication information'
+        });
+    } else {
+        // Implements the body data to the request:
+        request.loggedUsername = username.toLowerCase();
+        request.loggedPassword = password;
+        next();
+    }
+}
 
-
-
-
-
-
-// This route is to find all the comments made on posts and pictures.
-router.get('/', async(req, res) => {
+// CHECK IF A USER IS IN DATABASE
+const checkIfUsernameExists = async (request, response, next) => {
     try {
-        let allComments = await db.any('SELECT * FROM comments')
-        res.json({
-            payload: allComments,
-            message: 'Successfully retrieved all comments'
-        })
-    } catch (error) {
-        res.json({
-            message: 'Something went wrong'
+        const user = await db.one('SELECT * FROM users WHERE username = $1', [request.loggedUsername]);
+        request.userExists = true; // Validates that the user exists
+        request.targetUser = user; // Implement the target user to the request
+        next();
+    } catch (err) {
+        if (err.received === 0) { // SQL QUERY was expecting one row but didn't receive any one
+            request.userExists = false;
+            next();
+        } else {
+            response.status(500) // Internal Server Error
+            console.log(err)
+            response.json({
+                status: 'failed',
+                message: 'Something went wrong!'
+            });
+        }
+    }
+}
+
+// AUTHENTICATION
+const authenticateUser = (request, response, next) => {
+    if (request.userExists) {
+        if (request.targetUser.username === request.loggedUsername &&
+            request.targetUser.user_password === request.loggedPassword) {
+            next()
+        } else {
+            response.status(401) // Unauthorized
+            response.json({
+                status: 'failed',
+                message: 'Not authorized to accomplish the request'
+            })
+        }
+    } else {
+        response.status(404)
+        response.json({
+            status: 'failed',
+            message: 'User Does not exist'
         })
     }
-})
+}
+
+// This route is to find all the comments made on posts and pictures.
+const getAllComments = async(req, res) => {
+     try {
+         let allComments = await db.any('SELECT * FROM comments')
+         res.json({
+             payload: allComments,
+             message: 'Successfully retrieved all comments'
+         })
+     } catch (error) {
+         res.json({
+             message: 'Something went wrong'
+         })
+     }
+}
+router.get('/', getAllComments)
 
 // route to get comments from comments from a particular post
-router.get('/posts/:post_id', async(req, res) => {
-    let comments = req.param.comment
-    console.log('comments', comments)
+
+const getCommentsById = async(req, res) => {
+     let postID = req.params.post_id
+       
     try {
-        let commentsOnPosts = await db.any('SELECT author_username, post_id, comment FROM comments ')
-        console.log('comments on the posts', commentsOnPosts)
+       let commentsOnPosts = await db.any(`SELECT poster_username, body, author_username, comment FROM comments JOIN posts ON post_id = posts.id WHERE posts.id = $1`, [postID])
         res.json({
             payload: commentsOnPosts, 
-            status: 'success'
+            status: 'success',
             message: 'Successfully gathered all comments on posts'
         })
     } catch (error) {
@@ -43,12 +100,18 @@ router.get('/posts/:post_id', async(req, res) => {
             message: 'There was an error!'
         })
     }
-})
+}
+ 
+
+router.get('/posts/:post_id', getCommentsById)
+
 
 // This is the route to get comments on particular pictures.
-router.get('/pictures/:picture_id', async(req, res) => {
-    try { 
-        let commentsOnPics = await db.any('SELECT author_username, picture_id, comment FROM comments')
+const getPicturesById = async(req, res) => {
+    
+    let pictureId = req.param.picture_id
+    try {
+        let commentsOnPics = await db.any(`SELECT poster_username, body, author_username, comment FROM comments JOIN pictures ON picture_id = pictures.id WHERE pictures.id = $1`, [pictureId])
         res.json({
             payload: commentsOnPics,
             status: 'success',
@@ -60,9 +123,13 @@ router.get('/pictures/:picture_id', async(req, res) => {
             message: 'There was an error!'
         })
     }
-})
+
+}
+router.get('/pictures/:picture_id', getPicturesById)
+  
 
 // route to add a comment to a post
+// const addPost
 router.post('/posts/:post_id', async(req, res) => {
     
     try{
