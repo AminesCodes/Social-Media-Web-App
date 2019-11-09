@@ -4,6 +4,13 @@ const router = express.Router();
 //pg-promise request
 const {db} = require('../../Database/database'); //connected db instance
 
+
+
+
+
+
+
+
 // This route is to find all the comments made on posts and pictures.
 router.get('/', async(req, res) => {
     try {
@@ -22,11 +29,13 @@ router.get('/', async(req, res) => {
 // route to get comments from comments from a particular post
 router.get('/posts/:post_id', async(req, res) => {
     let comments = req.param.comment
+    console.log('comments', comments)
     try {
         let commentsOnPosts = await db.any('SELECT author_username, post_id, comment FROM comments ')
         console.log('comments on the posts', commentsOnPosts)
         res.json({
             payload: commentsOnPosts, 
+            status: 'success'
             message: 'Successfully gathered all comments on posts'
         })
     } catch (error) {
