@@ -146,6 +146,7 @@ const authenticateUser = (req, res, next) => {
 
 //Routes
 router.get('/:albumid', getPicturesByAlbum)
+router.get('/:pictureid', getPictureById)
 router.post('/:albumid', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, postPicture)
 router.delete('/:pictureid', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, deletePicture)
 
