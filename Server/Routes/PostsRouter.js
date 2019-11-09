@@ -37,7 +37,7 @@ router.get('/', getAllPosts);
 
 
 const validateRoute = (request, response, next) => {
-    const postID = request.params.usernameOrPostID;
+    const postID = request.params.postID;
 
     if (!isNaN(parseInt(postID)) && postID * 1 === parseInt(postID)) {
         request.postID = parseInt(postID)
@@ -121,7 +121,7 @@ const getAllPostsByUsername = async (request, response) => {
 
 
 //GET ALL POSTS OF A SPECIFIC USER OR A POST BY ID
-router.get('/:usernameOrPostID', validateRoute, routerTheEndpoint);
+router.get('/:postID', validateRoute, routerTheEndpoint);
 
 
 // CHECK AUTHENTICATION REQUEST BODY
@@ -309,7 +309,7 @@ const getUpdatedPost = async (request, response) => {
 
 
 // // EDITING A POST, EXPECTING A BODY WITH THE POSTS BODY
-router.patch('/:usernameOrPostID', validateRoute, checkValidBody, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, checkExistingPost, updatePost, getUpdatedPost);
+router.patch('/:postID', validateRoute, checkValidBody, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, checkExistingPost, updatePost, getUpdatedPost);
 
 
 const deletePost = async (request, response) => {
@@ -332,7 +332,7 @@ const deletePost = async (request, response) => {
 }
 
 // // DELETING A POST
-router.delete('/:usernameOrPostID', validateRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, checkExistingPost, deletePost);
+router.delete('/:postID', validateRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, checkExistingPost, deletePost);
 
 
 
