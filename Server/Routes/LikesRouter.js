@@ -126,9 +126,9 @@ router.get('/posts/:post_id', getLikesByPostID, validatePostQuery, displayPostQu
 
 //get the posts that a user liked
 //use liker username
-router.get('/posts/interest/:user_id', async (req, res) => {
+router.get('/posts/interest/:liker_username', async (req, res) => {
     try {
-        let specPost = await db.any('SELECT liker_username,body,poster_username FROM likes JOIN posts ON post_id = posts.id WHERE liker_username = $1', [req.params.user_id])
+        let specPost = await db.any('SELECT liker_username,body,poster_username FROM likes JOIN posts ON post_id = posts.id WHERE liker_username = $1', [req.params.liker_username])
         res.json({
             status: 'success',
             message: 'retrieved the likes',
@@ -151,7 +151,7 @@ const queryToLikePost = async (req, res, next) => {
         INSERT INTO likes (liker_username,post_id)
             VALUES($1, $2)`
 
-        await db.none(insertQuery, [req.body.liker_username, req.body.post_id])
+        await db.none(insertQuery, [req.body.loggedUsername, req.params.post_id])
         next()
     } catch (error) {
         res.status(500);
@@ -246,8 +246,7 @@ const likeRequestSent = (req, res) => {
     res.status(200);
     res.json({
         status: 'success',
-        message: 'request sent',
-        body: req.body
+        message: 'request sent'
     });
 }
 //router endpoint to create a like on a post
@@ -337,12 +336,11 @@ router.get('/pictures/popular', async (req, res) => {
 //this middleware performs the query to the database for the endpoint to get picture by picture id
 //it outputs the returned promise
 const getLikesByPictureID = async (req, res, next) => {
-    let picId = req.params.picture_id;
     try {
         let insertQuery = `
-        SELECT liker_username, username, firstname, lastname FROM likes JOIN users ON users.username = likes.liker_username JOIN pictures ON picture_id = pictures.id
+                SELECT liker_username, owner_username, picture_link FROM likes JOIN pictures ON picture_id = pictures.id JOIN albums ON album_id = albums.id WHERE picture_id = $1 
         `;
-        req.picLikes = await db.any(insertQuery, [picId]);
+        req.picLikes = await db.any(insertQuery, [req.params.picture_id]);
         delete req.picLikes.user_password;
         next();
     } catch (error) {
@@ -402,12 +400,13 @@ router.get('/pictures/interest/:liker_username', async (req, res) => {
 //this route will allow users to like another users picture
 //by using the picture_id
 const queryToLikePicture = async (req, res, next) => {
+
     try {
         let insertQuery = `
         INSERT INTO likes (liker_username,picture_id)
             VALUES($1, $2)`;
 
-        req.picLiker = await db.none(insertQuery, [req.body.liker_username, req.body.picture_id]);
+        await db.none(insertQuery, [req.body.loggedUsername, req.params.picture_id]);
         next();
     } catch (error) {
         res.status(500);
