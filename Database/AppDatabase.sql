@@ -42,7 +42,7 @@ CREATE TABLE pictures
 (
     id SERIAL PRIMARY KEY,
     album_id INT REFERENCES albums (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    picure_link VARCHAR NOT NULL,
+    picture_link VARCHAR NOT NULL,
     picture_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
@@ -102,7 +102,7 @@ VALUES
 
 
 INSERT INTO pictures
-    (album_id, picure_link)
+    (album_id, picture_link)
 VALUES
     (1, 'https://cdn.tinybuddha.com/wp-content/uploads/2015/10/Having-Fun.png'),
     (1, 'https://image.freepik.com/free-vector/cute-happy-kids-having-fun-cartoons_18591-60558.jpg'),
