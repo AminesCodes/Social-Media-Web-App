@@ -202,14 +202,14 @@ const authenticateUser = (request, response, next) => {
                 };
                 next()
         } else {
-            //response.status(401) // Unauthorized
+            response.status(401) // Unauthorized
             response.json({
                 status: 'failed',
                 message: 'Bad combination username/password'
             })
         }
     } else {
-        //response.status(401) // Unauthorized
+        response.status(401) // Unauthorized
         response.json({
             status: 'failed',
             message: 'User Does not exist'
@@ -218,8 +218,8 @@ const authenticateUser = (request, response, next) => {
 }
 
 // LOGGING ROUTE
-// NOT A REAL PATCH, JUST TO HAVE A ABILITY TO ACCEPT A BODY USING AXIOS
-router.patch('/logging', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, getConcernedUser);
+// USE OF PUT TO ACCEPT A BODY IN THE REQUEST
+router.put('/logging', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, getConcernedUser);
 
 
 // 
@@ -424,7 +424,8 @@ const deleteUser = async (request, response) => {
 
 
 // DELETING A USER
-router.delete('/:username', checkValidRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, deleteUser);
+// USE OF PUT TO ACCEPT A BODY IN THE REQUEST
+router.put('/:username/delete', checkValidRoute, checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, deleteUser);
   
 
 //
