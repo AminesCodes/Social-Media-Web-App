@@ -319,7 +319,7 @@ const deletePost = async (request, response) => {
         response.json({
             status: 'success',
             message: `Deleted the post with the id: ${request.targetPost.id}`,
-            message: request.targetPost
+            body: request.targetPost
         })
     } catch (err) {
         console.log(err);
