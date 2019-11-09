@@ -96,13 +96,30 @@ router.post('/pictures/:picture_id', async (req, res) => {
             message: 'Something went wrong'
         })
     }
-})
+}) 
 
 
-// route to update a comment in a post.
-// router.patch('/posts/:post_id/:comment', async(req, res) => {
-// 
-// }) 
+
+//route to update a comment in a post.
+router.patch('/posts/:post_id:', async(req, res) => {
+    try {
+        let updateQuery = `UPDATE comments
+                            SET comment = $3 post_id = $2
+                            WHERE author_username = $1`
+        await db.any(updateQuery, [req.body.author_username, req.body.post_id, req.body.comment])
+        res.json({
+            payload: req.body,
+            status: 'success',
+            message: 'Successfully updated comment'
+        })
+    } catch (error) {
+        res.json({
+            status: 'failed',
+            message: 'Something went wrong'
+        })
+    }
+
+}) 
 
 
 
