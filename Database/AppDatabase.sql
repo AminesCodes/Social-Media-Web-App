@@ -167,6 +167,5 @@ VALUES
     ('vonbar', 4);
 
 
-SELECT *
-FROM users JOIN posts ON username = poster_username;
+SELECT * FROM users JOIN posts ON username = poster_username;
 
