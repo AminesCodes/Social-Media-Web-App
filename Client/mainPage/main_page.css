@@ -12,6 +12,8 @@ body {
     justify-content: space-evenly;
     gap: 20px;
     align-items: center;
+    border: 2px solid peru;
+    padding: 20px;
 }
 
 a {
