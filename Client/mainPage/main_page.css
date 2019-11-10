@@ -1,8 +1,17 @@
+body {
+    display: flex;
+    flex-direction: row;
+    gap: 400px;
+    align-items: center;
+    justify-content: baseline;
+}
+
 #tableOfContents {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     gap: 20px;
+    align-items: center;
 }
 
 a {
