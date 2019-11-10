@@ -1,13 +1,17 @@
 let url;
+let loggedUsername = sessionStorage.getItem('loggedUsername');
+let loggedPassword = sessionStorage.getItem('loggedPassword');
+let targetUser = sessionStorage.getItem('targetUser');
 
 document.addEventListener('DOMContentLoaded', () => {
     loadPostsTimesLikedData();
-    loadPictureTimesLikedData()
+    loadPictureTimesLikedData();
 
     let feedForm = document.querySelector('#feedForm');
     let postDiv = document.querySelector('#postsContainer')
-    let picDiv = document.querySelector('#picturesContainer')
+    let picDiv = document.querySelector('#picturesContainer');
     picDiv.style.display = 'none'
+
 
     let toggle = 'posts'
     feedForm.addEventListener('submit', (event) => {
@@ -23,6 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
     })
+
+    // let likingPost = document.querySelector('.finalContainer');
+    // console.log(likingPost)
+
+
 })
 
 // this function loads the trending(times a post is liked) likes from the database
@@ -38,6 +47,9 @@ const loadPostsTimesLikedData = async () => {
         creatingCardPost(el)
     });
 
+    // let likingPost = document.querySelector('.finalContainer');
+    // console.log(likingPost)
+    evenListenerOnPost()
     return data
 }
 
@@ -57,6 +69,39 @@ const loadPictureTimesLikedData = async () => {
     return data
 }
 
+const evenListenerOnPost = () => {
+    let likingPost = document.querySelector('.finalContainer');
+    // console.log(likingPost);
+    likingPost.addEventListener('click', (event) => {
+        if (event.target.className = 'timesLiked') {
+            likeAPost()
+        }
+        if (event.target.className = 'commentDiv') {
+            console.log('hello');
+            
+        }
+            
+    })
+}
+
+const likeAPost = async () => {
+    // postID = document.querySelector('postID')
+    // postID.style.visibility = 'initial';
+    url = `http://localhost:3131/likes/posts/${4}?loggedUsername=${loggedUserName}?loggedPassword=${loggedPassword}`;
+
+    let liking = {
+        loggedUsername: loggedUsername,
+        loggedPassword: loggedPassword
+    }
+
+    const {
+        data
+    } = await axios.post(url, liking);
+
+    console.log('This is liking post', data);
+}
+
+//function to clear screen
 const clearScreen = async () => {
     container = getContainer()
     while (container.firstChild) {
@@ -74,30 +119,35 @@ const creatingCardPost = async (el) => {
     const postsContainer = getPostsContainer()
 
     //creating the elements that will hold the information on the pokemon
-    const postUserContainer = creatingElem('div');
-    const postLikeContainer = creatingElem('div');
+    const userContainer = creatingElem('div');
+    const likeContainer = creatingElem('div');
     const finalContainer = creatingElem('div');
 
-    postUserContainer.className = 'likes';
-    postLikeContainer.className = 'postLikeContainer';
-    finalContainer.className = 'finalContainer'
+    userContainer.className = 'userName';
+    likeContainer.className = 'likeContainer';
+    finalContainer.className = 'finalContainer';
 
-    
-    
+// creating tags to hold the information
     let posterUsername = creatingElem('p');
+    let commentDiv = creatingElem('div');
     let body = creatingElem('div');
     let times_liked = creatingElem('div');
+
+    body.className = el.post_id;
+    commentDiv.className = 'commentDiv';
+    commentDiv.innerText = 'Comments'
 
     //assigning the innerText fore the posts
     posterUsername.innerText = `This post by: ${el.poster_username}`
     body.innerText = `Text: ${el.body}`
     times_liked.innerText = `Liked: ${el.times_liked} times`;
+    times_liked.className = 'timesLiked';
 
     //then appends the newly created elements to the UserContainer  
-    postUserContainer.append(posterUsername, body);
-    postLikeContainer.append(body, times_liked);
-    
-    finalContainer.append(postUserContainer,postLikeContainer)
+    userContainer.append(posterUsername);
+    likeContainer.append(commentDiv, times_liked);
+
+    finalContainer.append(userContainer, body, likeContainer)
     //appending thd UserContainer that holds the created elements to the container
     postsContainer.append(finalContainer);
 }
@@ -105,18 +155,37 @@ const creatingCardPost = async (el) => {
 const creatingCardPic = async (el) => {
     const picturesContainer = getPicturesContainer()
 
-    const picSubContainer = creatingElem('div');
-    picSubContainer.className = 'likes';
+    const userContainer = creatingElem('div');
+    const likeContainer = creatingElem('div');
+    const finalContainer = creatingElem('div');
+    
 
+    let ownerUsername = creatingElem('p');
+    let commentDiv = creatingElem('div');
     let pic = creatingElem('img');
+    pic.className = el.post_id;
+
+    let times_liked = creatingElem('div');
+     times_liked.innerText = `Liked: ${el.times_liked} times`;
+    times_liked.className = 'timesLiked';
+    ownerUsername.innerText = el.owner_username
+
+    userContainer.className = 'userName';
+    likeContainer.className = 'likeContainer';
+    finalContainer.className = 'finalContainer';
+    commentDiv.className = 'commentDiv';
+    commentDiv.innerText = 'Comments';
 
     //assigning the innerText for the pictures
     pic.src = el.picture_link;
 
-    //then appends the newly created elements to the subContainer  
-    picSubContainer.append(pic)
+    userContainer.append(ownerUsername);
+    likeContainer.append(commentDiv,times_liked)
+
+    finalContainer.append(ownerUsername,pic,likeContainer)
+
     //appending thd subContainer that holds the created elements to the container
-    picturesContainer.append(picSubContainer)
+    picturesContainer.append(finalContainer)
 }
 
 //this function creates elements

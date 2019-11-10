@@ -30,11 +30,12 @@ a {
     justify-content: center;
 }
 
-.likes {
+.userName {
     display: flex;
     flex-direction: column;
     border: 1px solid salmon;
-    padding: 20px;
+    /* padding: 20px; */
+    height: 10vh;
     border-radius: 12%;
 }
 
@@ -44,14 +45,15 @@ a {
     flex-direction: column;
 }
 
-.postLikeContainer {
+.likeContainer {
     display: flex;
     justify-content: space-between;
     border: 1px black;
+    gap: 5px;
 
 }
 
-.postLikeContainer div {
+.likeContainer div {
     border: 1px solid burlywood;
     border-radius: 12%;
     padding: 10px;
