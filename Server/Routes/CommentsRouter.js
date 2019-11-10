@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 //pg-promise request
-const {db} = require('../../Database/database'); //connected db instance
+const {
+    db
+} = require('../../Database/database'); //connected db instance
 
 // CHECK AUTHENTICATION REQUEST BODY
 const checkValidAuthenticationBody = (request, response, next) => {
@@ -68,30 +70,30 @@ const authenticateUser = (request, response, next) => {
 }
 
 // This route is to find all the comments made on posts and pictures.
-const getAllComments = async(req, res) => {
-     try {
-         let allComments = await db.any('SELECT * FROM comments')
-         res.json({
-             payload: allComments,
-             message: 'Successfully retrieved all comments'
-         })
-     } catch (error) {
-         res.json({
-             message: 'Something went wrong'
-         })
-     }
+const getAllComments = async (req, res) => {
+    try {
+        let allComments = await db.any('SELECT * FROM comments')
+        res.json({
+            body: allComments,
+            message: 'Successfully retrieved all comments'
+        })
+    } catch (error) {
+        res.json({
+            message: 'Something went wrong'
+        })
+    }
 }
 router.get('/', getAllComments)
 
 // route to get comments from comments from a particular post
 
-const getCommentsById = async(req, res) => {
-     let postID = req.params.post_id
-       
+const getCommentsById = async (req, res) => {
+    let postID = req.params.post_id
+
     try {
-       let commentsOnPosts = await db.any(`SELECT poster_username, body, author_username, comment FROM comments JOIN posts ON post_id = posts.id WHERE posts.id = $1`, [postID])
+        let commentsOnPosts = await db.any(`SELECT poster_username, body, author_username, comment FROM comments JOIN posts ON post_id = posts.id WHERE posts.id = $1`, [postID])
         res.json({
-            payload: commentsOnPosts, 
+            body: commentsOnPosts,
             status: 'success',
             message: 'Successfully gathered all comments on posts'
         })
@@ -101,20 +103,20 @@ const getCommentsById = async(req, res) => {
         })
     }
 }
- 
+
 
 router.get('/posts/:post_id', getCommentsById)
 
 
 // This is the route to get comments on particular pictures.
-const getPicsById = async(req, res) => {
-    
+const getPicsById = async (req, res) => {
+
     let pictureId = req.params.picture_id
     console.log(pictureId)
     try {
-        let commentsOnPics = await db.any(`SELECT author_username, owner_username, picture_link, comment FROM comments JOIN pictures ON picture_id = pictures.id JOIN albums ON album_id = albums.id WHERE pictures.id = $1`, pictureId )
+        let commentsOnPics = await db.any(`SELECT author_username, owner_username, picture_link, comment FROM comments JOIN pictures ON picture_id = pictures.id JOIN albums ON album_id = albums.id WHERE pictures.id = $1`, pictureId)
         res.json({
-            payload: commentsOnPics,
+            body: commentsOnPics,
             status: 'success',
             message: 'Successfully retrieved all comments from pictures'
         })
@@ -127,17 +129,18 @@ const getPicsById = async(req, res) => {
 
 }
 router.get('/pictures/:picture_id', getPicsById)
-  
+
 
 // route to add a comment to a post
-const addCommentsOnPosts = async(req, res) => {
+const addCommentsOnPosts = async (req, res) => {
+    let postID = req.params.post_id
     try {
         let insertQuery = `INSERT INTO comments
             (author_username, post_id, comment)
              VALUES($1, $2, $3)`
-        await db.any(insertQuery, [req.body.author_username, req.body.post_id, req.body.comment])
+        await db.any(insertQuery, [req.loggedUsername, postId, req.body.comment])
         res.json({
-            payload: req.body,
+            body: req.body,
             status: 'success',
             message: 'POST request successfully arrived at comments/posts'
         })
@@ -150,43 +153,46 @@ const addCommentsOnPosts = async(req, res) => {
     }
 }
 router.post('/posts/:post_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, addCommentsOnPosts)
-    
-    
+
+
 
 
 
 // route to add a comment to a picture
-const addCommentsOnPics = async(req, res) => {
-      try {
-          let insertQuery = `INSERT INTO comments
+const addCommentsOnPics = async (req, res) => {
+    let pictureId = req.params.picture_id
+    try {
+        let insertQuery = `INSERT INTO comments
             (author_username, picture_id, comment)
              VALUES($1, $2, $3)`
-          await db.any(insertQuery, [req.body.author_username, req.body.picture_id, req.body.comment])
-          res.json({
-              payload: req.body,
-              status: 'success',
-              message: 'POST request successfully arrived at comments/pictures'
-          })
+        await db.any(insertQuery, [req.loggedUsername, pictureId, req.body.comment])
+        res.json({
+            body: req.body,
+            status: 'success',
+            message: 'POST request successfully arrived at comments/pictures'
+        })
 
-      } catch (error) {
-          res.json({
-              status: 'failed',
-              message: 'Something went wrong'
-          })
-      }
+    } catch (error) {
+        res.json({
+            status: 'failed',
+            message: 'Something went wrong'
+        })
+    }
 
 }
 router.post('/pictures/:picture_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, addCommentsOnPics)
 
-   //route to update a comment in a post.
-const updateCommentsOnPosts = async(req, res) => {
+//route to update a comment in a post.
+const updateCommentsOnPosts = async (req, res) => {
+    let postId = req.params.post_id
+    let commentId = req.params.comment_id
     try {
         let updateQuery = `UPDATE comments
-                            SET comment_id = $2 post_id = $3
-                            WHERE author_username = $1`
-        await db.any(updateQuery, [req.body.author_username, req.body.post_id, req.body.comment_id])
+                            SET comment = comment.id 
+                            WHERE post_id = $1 AND id = $2 AND author_username = $3`
+        await db.any(updateQuery, [req.logggedUsername, postId, commentId])
         res.json({
-            payload: req.body,
+            body: req.body,
             status: 'success',
             message: 'Successfully updated comment'
         })
@@ -198,41 +204,59 @@ const updateCommentsOnPosts = async(req, res) => {
     }
 }
 router.patch('/posts/:post_id/:comment_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, updateCommentsOnPosts)
-  
+
 
 
 // Route to update comment on a picture
-const updateCommentsOnPics = async(req, res) => {
-     try {
-         let updateQuery = `UPDATE comments
-                            SET comment = comment.id post_id = posts.id
-                            WHERE author_username = $1`
-         await db.any(updateQuery, [req.body.author_username, req.body.picture_id, req.body.comment])
-         res.json({
-             payload: req.body,
-             status: 'success',
-             message: 'Successfully updated comment'
-         })
-     } catch (error) {
-         res.json({
-             status: 'failed',
-             message: 'Something went wrong'
-         })
-     }
+const updateCommentsOnPics = async (req, res) => {
+    let postId = req.params.post_id
+    let commentId = req.params.comment_id
+    try {
+        let updateQuery = `UPDATE comments
+                            SET comment = comment.id 
+                            WHERE post_id = $1 AND id = $2 AND author_username = $3`
+                        
+        await db.any(updateQuery, [req.loggedUsername, postId, commentId])
+        res.json({
+            body: req.body,
+            status: 'success',
+            message: 'Successfully updated comment'
+        })
+    } catch (error) {
+        res.json({
+            status: 'failed',
+            message: 'Something went wrong'
+        })
+    }
 }
 router.patch('/pictures/:picture_id:', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, updateCommentsOnPics)
-    
 
-// route to delete a comment from a post
-const deleteCommentOnPosts = async(req, res) => {
-       let postId = req.params.post_id
-       let commentId = req.params.comment_id
 
-       let deleteQuery = `DELETE FROM comments WHERE post_id = $1 AND author_username = $2`
+const postDeletePermission = async (req, res, next) => {
     try {
-        await db.none(deleteQuery, [postId, commentId])
+        let postId = req.params.post_id
+        let commentId = req.params.comment_id
+        const requestQuery = `SELECT * FROM comments WHERE post_id = $1 AND id = $2 AND author_username = $3`
+        const targetComment = await db.one(requestQuery, [postId, commentId, req.loggedUsername])
+        req.targetComment = targetComment;
+        next()
+    } catch (err) {
+        res.json({
+            status: 'failed',
+            message: 'Something went wrong OR comment does not belonge to logged user'
+        })
+    }
+}
+// route to delete a comment from a post
+const deleteCommentOnPosts = async (req, res) => {
+    let commentID = req.targetComment.id
+    console.log(req.targetComment)
+    let deleteQuery = `DELETE FROM comments WHERE id = $1`
+    try {
+        await db.none(deleteQuery, commentID)
         res.json({
             status: 'success',
+            body: req.targetComment,
             message: 'The comment was successfully deleted from the post'
         })
 
@@ -243,20 +267,33 @@ const deleteCommentOnPosts = async(req, res) => {
         })
     }
 }
-router.put('/posts/:post_id/:comment_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, deleteCommentOnPosts)
- 
-   
-//route to delete a comment from a picture
-const deleteCommentOnPics = async(req, res) => {
-    let pictureId = req.params.picture_id
-    commentId = req.params.comment_id
-    console.log('picture id', pictureId)
-    console.log('comment id', commentId)
-    let deleteQuery = `DELETE FROM comments WHERE picture_id = $1 AND author_username = $2`
+router.put('/posts/:post_id/:comment_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, postDeletePermission, deleteCommentOnPosts)
+
+
+const pictureDeletePermission = async (req, res, next) => {
     try {
-        await db.none(deleteQuery, [pictureId])
+        let pictureId = req.params.post_id
+        let commentId = req.params.comment_id
+        const requestQuery = `SELECT * FROM comments WHERE picture_id = $1 AND id = $2 AND author_username = $3`
+        const targetComment = await db.one(requestQuery, [pictureId, commentId, req.loggedUsername])
+        req.targetComment = targetComment;
+        next()
+    } catch (err) {
+        res.json({
+            status: 'failed',
+            message: 'Something went wrong OR comment does not belonge to logged user'
+        })
+    }
+}
+//route to delete a comment from a picture
+const deleteCommentOnPics = async (req, res) => {
+    let commentID = req.targetComment.id
+    let deleteQuery = `DELETE FROM comments WHERE id = $1`
+    try {
+        await db.none(deleteQuery, commentID)
         res.json({
             status: 'success',
+            body: req.targetComment,
             message: 'The comment was successfully deleted from the picture'
         })
 
@@ -267,8 +304,8 @@ const deleteCommentOnPics = async(req, res) => {
         })
     }
 }
-router.put('/pictures/:picture_id/:comment_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, deleteCommentOnPics)
-  
+router.put('/pictures/:picture_id/:comment_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, pictureDeletePermission, deleteCommentOnPics)
+
 
 
 module.exports = router;
