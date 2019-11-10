@@ -107,11 +107,12 @@ router.get('/posts/:post_id', getCommentsById)
 
 
 // This is the route to get comments on particular pictures.
-const getPicturesById = async(req, res) => {
+const getPicsById = async(req, res) => {
     
     let pictureId = req.param.picture_id
+    // console.log(pictureId)
     try {
-        let commentsOnPics = await db.any(`SELECT poster_username, body, author_username, comment FROM comments JOIN pictures ON picture_id = pictures.id WHERE pictures.id = $1`, [pictureId])
+        let commentsOnPics = await db.any(`SELECT author_username, owner_username, picture_link, comment FROM comments JOIN pictures ON picture_id = pictures.id JOIN albums ON album_id = albums.id WHERE pictures.id = $1`)
         res.json({
             payload: commentsOnPics,
             status: 'success',
@@ -125,11 +126,11 @@ const getPicturesById = async(req, res) => {
     }
 
 }
-router.get('/pictures/:picture_id', getPicturesById)
+router.get('/pictures/:picture_id', getPicsById)
   
 
 // route to add a comment to a post
-// const addPost
+//const addPost
 router.post('/posts/:post_id', async(req, res) => {
     
     try{
@@ -180,7 +181,7 @@ router.post('/pictures/:picture_id', async (req, res) => {
 router.patch('/posts/:post_id:', async(req, res) => {
     try {
         let updateQuery = `UPDATE comments
-                            SET comment = $3 post_id = $2
+                            SET comment = comment.id post_id = posts.id
                             WHERE author_username = $1`
         await db.any(updateQuery, [req.body.author_username, req.body.post_id, req.body.comment])
         res.json({
@@ -197,7 +198,47 @@ router.patch('/posts/:post_id:', async(req, res) => {
 
 }) 
 
+// route to delete a comment from a post
+router.delete('/posts/:post_id/:comment_id', async(req, res) => {
+    let postId = req.params.post_id
+    let commentId = req.params.comment_id
+   
+    let deleteQuery = `DELETE FROM comments WHERE post_id = $1 AND author_username = $2`
+    try {
+         await db.none(deleteQuery, [postId, commentId])
+        res.json({
+            status: 'success', 
+            message: 'The comment was successfully deleted from the post'
+        })
 
+    } catch (error) {
+        res.json({
+            status: 'failed',
+            message: 'The comment failed to be deleted'
+        })
+    }
+})
 
+//route to delete a comment from a picture
+router.delete('/pictures/:picture_id/:comment_id', async (req, res) => {
+    let pictureId = req.params.picture_id
+    commentId = req.params.comment_id
+    console.log('picture id', pictureId)
+    console.log('comment id', commentId)
+    let deleteQuery = `DELETE FROM comments WHERE picture_id = $1 AND author_username = $2`
+    try {
+       await db.none(deleteQuery, [pictureId])
+        res.json({
+            status: 'success',
+            message: 'The comment was successfully deleted from the picture'
+        })
+
+    } catch (error) {
+        res.json({
+            status: 'failed',
+            message: 'The comment failed to be deleted'
+        })
+    }
+})
 
 module.exports = router;
