@@ -133,7 +133,7 @@ router.get('/pictures/:picture_id', getPicsById)
 
 // route to add a comment to a post
 const addCommentsOnPosts = async (req, res) => {
-    let postID = req.params.post_id
+    let postId = req.params.post_id
     try {
         let insertQuery = `INSERT INTO comments
             (author_username, post_id, comment)
@@ -201,15 +201,14 @@ const postChangePermission = async (req, res, next) => {
 
 //route to update a comment in a post.
 const updateCommentsOnPosts = async (req, res) => {
-    let postId = req.params.post_id
-    let commentId = req.params.comment_id
     try {
         let updateQuery = `UPDATE comments
-                            SET comment = comment.id 
-                            WHERE post_id = $1 AND id = $2 AND author_username = $3`
-        await db.any(updateQuery, [req.logggedUsername, postId, commentId])
+                            SET comment = $1
+                            WHERE id = $2`
+        await db.any(updateQuery, [req.body.comment, req.targetComment.id])
+        req.targetComment.comment = req.body.comment
         res.json({
-            body: req.body,
+            body: req.targetComment,
             status: 'success',
             message: 'Successfully updated comment'
         })
@@ -225,8 +224,9 @@ router.patch('/posts/:post_id/:comment_id', checkValidAuthenticationBody, checkI
 //middleware to check if comment was deleted from picture
 const pictureChangePermission = async (req, res, next) => {
     try {
-        let pictureId = req.params.post_id
+        let pictureId = req.params.picture_id
         let commentId = req.params.comment_id
+        console.log(pictureId, commentId)
         const requestQuery = `SELECT * FROM comments WHERE picture_id = $1 AND id = $2 AND author_username = $3`
         const targetComment = await db.one(requestQuery, [pictureId, commentId, req.loggedUsername])
         req.targetComment = targetComment;
@@ -241,16 +241,16 @@ const pictureChangePermission = async (req, res, next) => {
 
 // Route to update comment on a picture
 const updateCommentsOnPics = async (req, res) => {
-    let postId = req.params.post_id
-    let commentId = req.params.comment_id
     try {
         let updateQuery = `UPDATE comments
-                            SET comment = comment.id 
-                            WHERE post_id = $1 AND id = $2 AND author_username = $3`
+                            SET comment = $1
+                            WHERE id = $2`
                         
-        await db.any(updateQuery, [req.loggedUsername, postId, commentId])
+        await db.any(updateQuery, [req.body.comment, req.targetComment.id])
+        delete req.targetComment.comment;
+        req.targetComment.comment = req.body.comment
         res.json({
-            body: req.body,
+            body: req.targetComment,
             status: 'success',
             message: 'Successfully updated comment'
         })
@@ -261,7 +261,7 @@ const updateCommentsOnPics = async (req, res) => {
         })
     }
 }
-router.patch('/pictures/:picture_id:/:comment_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, pictureChangePermission, updateCommentsOnPics)
+router.patch('/pictures/:picture_id/:comment_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, pictureChangePermission, updateCommentsOnPics)
 
 
 // route to delete a comment from a post
@@ -307,7 +307,5 @@ const deleteCommentOnPics = async (req, res) => {
     }
 }
 router.put('/pictures/:picture_id/:comment_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, pictureChangePermission, deleteCommentOnPics)
-
-
 
 module.exports = router;

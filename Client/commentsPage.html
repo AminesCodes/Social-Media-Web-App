@@ -1,32 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+​
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="commentsPage.js"></script>
-    <!-- <link href=""> -->
-    <link href="commentsPage.css" rel="stylesheet">
-    <title>Social-Media App</title>
+    <link rel="stylesheet" href="./commentPage.css">
+    <script src="./commentsPage.js"></script>
+    <title>User Comments Page</title>
 </head>
+​
+
 <body>
-    <h1>Comments Page</h1>
-    <div class="main-div">
-        <div class="table-of-content">
-            <button id="account">Account</button>
-            <br>
-            <button id="albums">Albums</button>
-            <br>
-            <button id="posts">Posts</button>
-            <br>
-            <button id="p">Likes</button>
-        </div>
-        <div class="posts">
-            
-        </div>
-        <div class="pictures"></div>
-        <div class=""></div>
+    <div id="tableOfContents">
+        <h1>Comments</h1>
+        <button id="user-Info">User Info</button>
+        <br>
+        <button id="albums">Albums</button>
+         <br>
+        <button id="accounts">Accounts</button>
+         <br>
+        <button id="likes">Likes</button>
+         <br>
+        <button id="posts">Posts</button>
+         <br>
+        <button id="all-users">All Users</button>
+         <br>
+        <button id="logout">Log out</button>
+         <br>
+        <a href="../../index.html">Home</a>
+    </div>
+    ​
+    <div id="feed">
+        <h3>Feed</h3>
+        <div id="postsContainer"></div>
+        <div id="picturesContainer"></div>
     </div>
 </body>
+​
+
 </html>
