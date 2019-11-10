@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="/Client/index.js"></script>
+    <link rel="stylesheet" href="/Client/index.css">
+    <title>Social Media App</title>
+</head>
+<body>
+    <div id="menu">
+
+    </div>
+
+    <div id="leftDiv">
+        <form id="searchBar">
+            <input id="searchInput" type="text" placeholder="Search keyword">
+        </form>
+    
+        <div id="description"> DESCRIPTION HERE</div>
+    
+        <div id="searchResult">
+            <ul></ul>
+        </div>
+    </div>
+
+    <div id="rightDiv">
+        <form id="loginForm" class="login">
+            <input type="text" name="username" id="usernameInput" placeholder="Username">
+            <input type="text" name="pwd" id="passwordInput" placeholder="Password">
+            <input type="text" name="firstname" id="firstNameInput" placeholder="First name">
+            <input type="text" name="lastname" id="lastNameInput" placeholder="Last name">
+            <label for="dateOfBirthInput">Date of birth: </label>
+            <input type="text" name="dob" id="dateOfBirthInput" placeholder="YYYY-MM-DD">
+            <button id="login">Login</button>
+        </form>
+    </div>
+
+    <button id="signInBtn" class="signInBtn">Sign in</button>
+
+    <div id="feedbackDiv">
+        <button id="closeBtn">X</button>
+        <p id="feedbackText"></p>
+    </div>
+    
+
+</body>
+</html>
