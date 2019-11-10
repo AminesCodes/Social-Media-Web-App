@@ -28,10 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     })
 
-    // let likingPost = document.querySelector('.finalContainer');
-    // console.log(likingPost)
-
-
 })
 
 // this function loads the trending(times a post is liked) likes from the database
@@ -50,7 +46,6 @@ const loadPostsTimesLikedData = async () => {
     // let likingPost = document.querySelector('.finalContainer');
     // console.log(likingPost)
     evenListenerOnPost()
-    return data
 }
 
 // this function loads the trending(times a post is liked) likes from the database
@@ -65,40 +60,64 @@ const loadPictureTimesLikedData = async () => {
     data.body.forEach(el => {
         creatingCardPic(el)
     });
-
-    return data
 }
 
 const evenListenerOnPost = () => {
-    let likingPost = document.querySelector('.finalContainer');
+    let finalContainer = document.querySelector('#postsContainer');
+    let likingPost = document.querySelector('.finalContainer')
     // console.log(likingPost);
-    likingPost.addEventListener('click', (event) => {
-        if (event.target.className = 'timesLiked') {
-            likeAPost()
+    finalContainer.addEventListener('click', async (event) => {
+        if (event.target.className === 'timesLiked') {
+            console.log(likingPost.id);
+
+            let response = await likeAPost(likingPost.id)
+            console.log(response.message);
+            if (response.message === 'post already liked') {
+                deleteLike(likingPost.id);
+            }
         }
-        if (event.target.className = 'commentDiv') {
+        if (event.target.className === 'commentDiv') {
             console.log('hello');
-            
+
         }
-            
+
     })
 }
 
-const likeAPost = async () => {
-    // postID = document.querySelector('postID')
-    // postID.style.visibility = 'initial';
-    url = `http://localhost:3131/likes/posts/${4}?loggedUsername=${loggedUserName}?loggedPassword=${loggedPassword}`;
+//this function is to like a users post
+const likeAPost = async (postId) => {
+    url = `http://localhost:3131/likes/posts/${postId}`;
 
-    let liking = {
-        loggedUsername: loggedUsername,
-        loggedPassword: loggedPassword
+    //user login information object
+    let loginInfo = {
+        loggedUsername: 'vonbar',
+        loggedPassword: '123'
+    };
+    try {
+        const {
+            data
+        } = await axios.post(url, loginInfo);
+        console.log('this is data', data)
+        return data;
+    } catch (err) {
+        console.log(err)
     }
+}
 
+//this function deletes a like
+const deleteLike = async (postId) => {
+    url = `http://localhost:3131/likes/posts/${postId}/delete`
+    console.log('called')
+    //user login information object
+    let loginInfo = {
+        loggedUsername: 'vonbar',
+        loggedPassword: '123'
+    };
     const {
         data
-    } = await axios.post(url, liking);
+    } = await axios.put(url, loginInfo)
+    console.log(data);
 
-    console.log('This is liking post', data);
 }
 
 //function to clear screen
@@ -126,14 +145,15 @@ const creatingCardPost = async (el) => {
     userContainer.className = 'userName';
     likeContainer.className = 'likeContainer';
     finalContainer.className = 'finalContainer';
+    finalContainer.id = el.post_id
 
-// creating tags to hold the information
+    // creating tags to hold the information
     let posterUsername = creatingElem('p');
     let commentDiv = creatingElem('div');
     let body = creatingElem('div');
     let times_liked = creatingElem('div');
 
-    body.className = el.post_id;
+    body.className = 'postBody';
     commentDiv.className = 'commentDiv';
     commentDiv.innerText = 'Comments'
 
@@ -158,7 +178,7 @@ const creatingCardPic = async (el) => {
     const userContainer = creatingElem('div');
     const likeContainer = creatingElem('div');
     const finalContainer = creatingElem('div');
-    
+
 
     let ownerUsername = creatingElem('p');
     let commentDiv = creatingElem('div');
@@ -166,7 +186,7 @@ const creatingCardPic = async (el) => {
     pic.className = el.post_id;
 
     let times_liked = creatingElem('div');
-     times_liked.innerText = `Liked: ${el.times_liked} times`;
+    times_liked.innerText = `Liked: ${el.times_liked} times`;
     times_liked.className = 'timesLiked';
     ownerUsername.innerText = el.owner_username
 
@@ -180,9 +200,9 @@ const creatingCardPic = async (el) => {
     pic.src = el.picture_link;
 
     userContainer.append(ownerUsername);
-    likeContainer.append(commentDiv,times_liked)
+    likeContainer.append(commentDiv, times_liked)
 
-    finalContainer.append(ownerUsername,pic,likeContainer)
+    finalContainer.append(ownerUsername, pic, likeContainer)
 
     //appending thd subContainer that holds the created elements to the container
     picturesContainer.append(finalContainer)
