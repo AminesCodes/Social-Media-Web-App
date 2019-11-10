@@ -94,10 +94,10 @@ VALUES
 INSERT INTO albums
     (album_name, owner_username)
 VALUES
-    ('album1', 'jenama'),
-    ('album1', 'sergiocohens'),
-    ('album1', 'aminescodes'),
-    ('album1', 'vonbar'),
+    ('Kids', 'jenama'),
+    ('Random', 'sergiocohens'),
+    ('Manga', 'aminescodes'),
+    ('Turtles', 'vonbar'),
     ('Pixar', 'aminescodes');
 
 
