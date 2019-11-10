@@ -1,9 +1,7 @@
 body {
-    display: flex;
-    flex-direction: row;
-    gap: 400px;
-    align-items: center;
-    justify-content: baseline;
+    display: grid;
+    grid-template-columns: 20% 80%;
+    /* grid-template-columns: repeat(auto-fill, minmax(5fr, 5fr)); */
 }
 
 #tableOfContents {
@@ -22,4 +20,25 @@ a {
     padding: 20px;
     width: 10vw;
     justify-content: center;
+}
+
+#feed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.likes {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid salmon;
+    padding: 20px;
+    border-radius: 12%;
+}
+
+#container {
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
 }

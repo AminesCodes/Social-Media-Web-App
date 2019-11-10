@@ -39,7 +39,7 @@ const creatingCard = async (el) => {
 
     posterUsername = `The post by: ${el.poster_username}`
     body.innerText = `Text: ${el.body}`
-    times_liked.innerText = `Was liked: ${el.times_liked} times`
+    times_liked.innerText = `Liked: ${el.times_liked} times`
 
     //Check if the data returned is a post or not (by checking of post id exits)
     //then appends the newly created elements to the subContainer  
