@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
 router.get('/posts/times_liked', async (req, res) => {
     try {
         let insertQuery = `
-        SELECT posts.id AS post_id, COUNT(posts.id) AS times_liked
+        SELECT poster_username,body,posts.id AS post_id, COUNT(posts.id) AS times_liked
         from posts
         JOIN likes ON posts.id = likes.post_id
         GROUP BY posts.id
@@ -283,10 +283,10 @@ router.put('/posts/:post_id/delete', checkValidAuthenticationBody, checkIfUserna
 router.get('/pictures/times_liked', async (req, res) => {
     try {
         let insertQuery = `
-        SELECT pictures.id AS picture_id, COUNT(pictures.id) AS times_liked
+        SELECT owner_username,picture_link,picture_id, COUNT(picture_id) AS times_liked
         from pictures
-        JOIN likes ON pictures.id = likes.picture_id
-        GROUP BY pictures.id
+        JOIN likes ON pictures.id = likes.picture_id JOIN albums ON album_id = albums.id WHERE picture_id = pictures.id
+        GROUP BY picture_id, owner_username,picture_link
         ORDER BY times_liked DESC
         `;
         let liked = await db.any(insertQuery)
@@ -309,11 +309,9 @@ router.get('/pictures/times_liked', async (req, res) => {
 router.get('/pictures/popular', async (req, res) => {
     try {
         let insertQuery = `
-        SELECT username, poster_username, firstname, lastname, body from pictures
-        WHERE pictures.id = (
-            SELECT pictures.id FROM pictures JOIN likes ON pictures.id = likes.picture_id 
-            GROUP BY pictures.id ORDER BY COUNT(pictures.id) DESC LIMIT 1
-        )
+        SELECT owner_username,album_id,picture_id, owner_username, picture_link FROM likes JOIN pictures ON picture_id = pictures.id JOIN albums ON album_id = albums.id WHERE picture_id = (
+            SELECT pictures.id FROM pictures JOIN likes ON pictures.id = picture_id GROUP BY pictures.id ORDER BY COUNT(pictures.id) DESC LIMIT 1
+        ) GROUP BY liker_username, album_id, picture_id, owner_username, picture_link ORDER BY COUNT(picture_id) LIMIT 1
         `;
         let num1 = await db.any(insertQuery)
         res.json({
