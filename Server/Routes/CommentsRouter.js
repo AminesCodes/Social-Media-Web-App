@@ -182,6 +182,23 @@ const addCommentsOnPics = async (req, res) => {
 }
 router.post('/pictures/:picture_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, addCommentsOnPics)
 
+//middleware to check for deleted comment on post
+const postChangePermission = async (req, res, next) => {
+    try {
+        let postId = req.params.post_id
+        let commentId = req.params.comment_id
+        const requestQuery = `SELECT * FROM comments WHERE post_id = $1 AND id = $2 AND author_username = $3`
+        const targetComment = await db.one(requestQuery, [postId, commentId, req.loggedUsername])
+        req.targetComment = targetComment;
+        next()
+    } catch (err) {
+        res.json({
+            status: 'failed',
+            message: 'Something went wrong OR comment does not belonge to logged user'
+        })
+    }
+}
+
 //route to update a comment in a post.
 const updateCommentsOnPosts = async (req, res) => {
     let postId = req.params.post_id
@@ -203,9 +220,24 @@ const updateCommentsOnPosts = async (req, res) => {
         })
     }
 }
-router.patch('/posts/:post_id/:comment_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, updateCommentsOnPosts)
+router.patch('/posts/:post_id/:comment_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, postChangePermission, updateCommentsOnPosts)
 
-
+//middleware to check if comment was deleted from picture
+const pictureChangePermission = async (req, res, next) => {
+    try {
+        let pictureId = req.params.post_id
+        let commentId = req.params.comment_id
+        const requestQuery = `SELECT * FROM comments WHERE picture_id = $1 AND id = $2 AND author_username = $3`
+        const targetComment = await db.one(requestQuery, [pictureId, commentId, req.loggedUsername])
+        req.targetComment = targetComment;
+        next()
+    } catch (err) {
+        res.json({
+            status: 'failed',
+            message: 'Something went wrong OR comment does not belonge to logged user'
+        })
+    }
+}
 
 // Route to update comment on a picture
 const updateCommentsOnPics = async (req, res) => {
@@ -229,24 +261,9 @@ const updateCommentsOnPics = async (req, res) => {
         })
     }
 }
-router.patch('/pictures/:picture_id:', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, updateCommentsOnPics)
+router.patch('/pictures/:picture_id:/:comment_id', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, pictureChangePermission, updateCommentsOnPics)
 
 
-const postDeletePermission = async (req, res, next) => {
-    try {
-        let postId = req.params.post_id
-        let commentId = req.params.comment_id
-        const requestQuery = `SELECT * FROM comments WHERE post_id = $1 AND id = $2 AND author_username = $3`
-        const targetComment = await db.one(requestQuery, [postId, commentId, req.loggedUsername])
-        req.targetComment = targetComment;
-        next()
-    } catch (err) {
-        res.json({
-            status: 'failed',
-            message: 'Something went wrong OR comment does not belonge to logged user'
-        })
-    }
-}
 // route to delete a comment from a post
 const deleteCommentOnPosts = async (req, res) => {
     let commentID = req.targetComment.id
@@ -267,24 +284,9 @@ const deleteCommentOnPosts = async (req, res) => {
         })
     }
 }
-router.put('/posts/:post_id/:comment_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, postDeletePermission, deleteCommentOnPosts)
+router.put('/posts/:post_id/:comment_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, postChangePermission, deleteCommentOnPosts)
 
 
-const pictureDeletePermission = async (req, res, next) => {
-    try {
-        let pictureId = req.params.post_id
-        let commentId = req.params.comment_id
-        const requestQuery = `SELECT * FROM comments WHERE picture_id = $1 AND id = $2 AND author_username = $3`
-        const targetComment = await db.one(requestQuery, [pictureId, commentId, req.loggedUsername])
-        req.targetComment = targetComment;
-        next()
-    } catch (err) {
-        res.json({
-            status: 'failed',
-            message: 'Something went wrong OR comment does not belonge to logged user'
-        })
-    }
-}
 //route to delete a comment from a picture
 const deleteCommentOnPics = async (req, res) => {
     let commentID = req.targetComment.id
@@ -304,7 +306,7 @@ const deleteCommentOnPics = async (req, res) => {
         })
     }
 }
-router.put('/pictures/:picture_id/:comment_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, pictureDeletePermission, deleteCommentOnPics)
+router.put('/pictures/:picture_id/:comment_id/delete', checkValidAuthenticationBody, checkIfUsernameExists, authenticateUser, pictureChangePermission, deleteCommentOnPics)
 
 
 
