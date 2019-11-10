@@ -3,6 +3,7 @@ let loggedPassword = sessionStorage.getItem('loggedPassword');
 let targetUser = sessionStorage.getItem('targetUser');
 
 document.addEventListener('DOMContentLoaded', () => {
+    let div
 
 })
 
