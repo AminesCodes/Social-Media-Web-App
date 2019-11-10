@@ -44,6 +44,25 @@ a {
     flex-direction: column;
 }
 
+.postLikeContainer {
+    display: flex;
+    justify-content: space-between;
+    border: 1px black;
+
+}
+
+.postLikeContainer div {
+    border: 1px solid burlywood;
+    border-radius: 12%;
+    padding: 10px;
+}
+
+/* .finalContainer {
+    border: 1px solid black;
+    border-radius: 12%;
+    padding: 9px;
+} */
+
 img {
     width: 219px;
 }

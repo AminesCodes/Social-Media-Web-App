@@ -6,12 +6,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let feedForm = document.querySelector('#feedForm');
     let postDiv = document.querySelector('#postsContainer')
-    let picDiv = document.querySelector('#picturesContainer').style.display = 'none'
+    let picDiv = document.querySelector('#picturesContainer')
+    picDiv.style.display = 'none'
 
+    let toggle = 'posts'
     feedForm.addEventListener('submit', (event) => {
-        event.preventDefault()
-        postDiv.style.display = 'none';
-        picDiv.style.display = 'true'
+        event.preventDefault();
+        if (toggle === 'posts') {
+            picDiv.style.display = 'initial'
+            postDiv.style.display = 'none';
+            toggle = 'pictures'
+        } else if (toggle === 'pictures') {
+            picDiv.style.display = 'none'
+            postDiv.style.display = 'initial';
+            toggle = 'posts'
+        }
+
     })
 })
 
@@ -64,22 +74,32 @@ const creatingCardPost = async (el) => {
     const postsContainer = getPostsContainer()
 
     //creating the elements that will hold the information on the pokemon
-    const postSubContainer = creatingElem('div');
-    postSubContainer.className = 'likes';
+    const postUserContainer = creatingElem('div');
+    const postLikeContainer = creatingElem('div');
+    const finalContainer = creatingElem('div');
+
+    postUserContainer.className = 'likes';
+    postLikeContainer.className = 'postLikeContainer';
+    finalContainer.className = 'finalContainer'
+
+    
+    
     let posterUsername = creatingElem('p');
-    let body = creatingElem('p');
-    let times_liked = creatingElem('p');
+    let body = creatingElem('div');
+    let times_liked = creatingElem('div');
 
     //assigning the innerText fore the posts
     posterUsername.innerText = `This post by: ${el.poster_username}`
     body.innerText = `Text: ${el.body}`
     times_liked.innerText = `Liked: ${el.times_liked} times`;
 
-    //then appends the newly created elements to the subContainer  
-    postSubContainer.append(posterUsername, body, times_liked);
-
-    //appending thd subContainer that holds the created elements to the container
-    postsContainer.append(postSubContainer);
+    //then appends the newly created elements to the UserContainer  
+    postUserContainer.append(posterUsername, body);
+    postLikeContainer.append(body, times_liked);
+    
+    finalContainer.append(postUserContainer,postLikeContainer)
+    //appending thd UserContainer that holds the created elements to the container
+    postsContainer.append(finalContainer);
 }
 //creating cards for pictures
 const creatingCardPic = async (el) => {
@@ -87,9 +107,9 @@ const creatingCardPic = async (el) => {
 
     const picSubContainer = creatingElem('div');
     picSubContainer.className = 'likes';
-    
+
     let pic = creatingElem('img');
-    
+
     //assigning the innerText for the pictures
     pic.src = el.picture_link;
 
