@@ -25,6 +25,7 @@ a {
 #feed {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
 }
@@ -37,8 +38,12 @@ a {
     border-radius: 12%;
 }
 
-#container {
+#postsContainer {
     gap: 20px;
     display: flex;
     flex-direction: column;
+}
+
+img {
+    width: 219px;
 }
