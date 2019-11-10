@@ -113,7 +113,7 @@ VALUES
     (4, 'https://image.shutterstock.com/image-vector/sea-turtle-cartoon-260nw-701671366.jpg'),
     (4, 'https://i.pinimg.com/originals/56/5a/f5/565af5258e27b98b07c31a594b880534.jpg'),
     (5, 'https://www.pop-culture.biz/images17/0737CABF.jpg'),
-    (5, 'https://usercontent1.hubstatic.com/14174350.png');
+    (5, 'https://pbs.twimg.com/profile_images/884528226630086657/LNt9G3HJ_400x400.jpg');
 
 
 INSERT INTO comments
