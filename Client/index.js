@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchBarForm = document.querySelector('#searchBar');
     const loginForm = document.querySelector('#loginForm');
 
+    //LABELS
+    const firstNameLabel = document.querySelector('label[for="firstNameInput"]');
+    const lastNameLabel = document.querySelector('label[for="lastNameInput"]');
+    const dateOfBirthLabel = document.querySelector('label[for="dateOfBirthInput"]');
+
+
     //INPUTS
     const searchInput = document.querySelector('#searchInput');
     const usernameInput = document.querySelector('#usernameInput');
@@ -58,10 +64,26 @@ document.addEventListener('DOMContentLoaded', () => {
             lastNameInput.style.display = 'none';
             dateOfBirthInput.style.display = 'none';
 
+            firstNameInput.nextElementSibling.style.display = 'none';
+            lastNameInput.nextElementSibling.style.display = 'none';
+            dateOfBirthInput.nextElementSibling.style.display = 'none';
+
+            firstNameLabel.style.display = 'none';
+            lastNameLabel.style.display = 'none';
+            dateOfBirthLabel.style.display = 'none';
+
         } else if (loginForm.className === 'signIn') {
             firstNameInput.style.display = 'inline';
             lastNameInput.style.display = 'inline';
             dateOfBirthInput.style.display = 'inline';
+
+            firstNameInput.nextElementSibling.style.display = 'inline';
+            lastNameInput.nextElementSibling.style.display = 'inline';
+            dateOfBirthInput.nextElementSibling.style.display = 'inline';
+
+            firstNameLabel.style.display = 'inline';
+            lastNameLabel.style.display = 'inline';
+            dateOfBirthLabel.style.display = 'inline';
         }
     }
     manageInputFieldsDisplay();
@@ -90,8 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 if (checkValidDOBFormat(dob)) {
                     requestSignIn(username, password, firstName, lastName, dob, feedbackDiv, feedbackText)
-                    // usernameInput.value = '';
-                    // passwordInput.value = '';
+                    usernameInput.value = '';
+                    passwordInput.value = '';
                 } else {
                     feedbackDiv.style.display = 'block';
                     feedbackText.innerText = 'Date of birth should be on the format YYYY-MM-DD';
@@ -118,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     searchBarForm.addEventListener('submit', (event) => {
         event.preventDefault();
-        let searchWord = searchInput.value;
+        const searchWord = searchInput.value;
 
         if (searchWord) {
             searchForUser(searchWord, feedbackDiv, feedbackText, ulTag)
@@ -127,10 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // EVENT LISTENER FOR CLICK ON SEARCH RESULT USERNAME
     ulTag.addEventListener('click', (event) => {
-        if (event.target === ulTag) {
-            targetUser = ulTag.firstChild
-            // PLACEHOLDER FOR STORING DATA
-            window.location.href = "http://goole.com";
+        if (event.target === ulTag.firstChild) {
+            targetUser = ulTag.firstChild.innerText;
+            sessionStorage.setItem('targetUser', `${targetUser}`);
+            window.location.href = './Client/Main page/mainPage.html';
         }
     })
 
@@ -166,7 +188,9 @@ const requestLogin = async (username, password, feedbackDiv, feedbackText) => {
         const response = await axios.put(`${baseURL}/users/logging`, {loggedUsername: username, loggedPassword: password});
         loggedUsername = response.data.body.username;
         loggedPassword = password;
-        // PLACEHOLDER FOR STORING DATA
+        sessionStorage.setItem('loggedUsername', `${loggedUsername}`);
+        sessionStorage.setItem('loggedPassword', `${loggedPassword}`);
+        window.location.href = './Client/Main page/mainPage.html'
     }  catch (err) {
         feedbackDiv.style.display = 'block';
         if (err.response.data.message) {
@@ -189,7 +213,9 @@ const requestSignIn = async (username, password, firstName, lastName, dob, feedb
         const response = await axios.post(`${baseURL}/users`, requestBody);
         loggedUsername = response.data.body.username;
         loggedPassword = password;
-        // PLACEHOLDER FOR STORING DATA
+        sessionStorage.setItem('loggedUsername', `${loggedUsername}`);
+        sessionStorage.setItem('loggedPassword', `${loggedPassword}`);
+        window.location.href = './Client/Main page/mainPage.html'
     }  catch (err) {
         feedbackDiv.style.display = 'block';
         if (err.response.data.message) {
@@ -218,8 +244,9 @@ const searchForUser = async (searchWord, feedbackDiv, feedbackText, ulTag) => {
 
 // AD SEARCH RESULT TO DOM
 const displaySearchResult = (ulTag, userInfo) => {
-    ulTag.innerText = userInfo.username;
-    ulTag.className = 'usernameUl'
+    const usernameLi = document.createElement('li');
+    usernameLi.innerText = userInfo.username,
+    usernameLi.className = 'usernameLi';
 
     const firstNameLi = document.createElement('li');
     const boldFirstName = document.createElement('strong');
@@ -239,5 +266,5 @@ const displaySearchResult = (ulTag, userInfo) => {
     signingDate.className = 'signingDate'
     signingDate.innerText = `User since: ${userInfo.signing_date}`;
     
-    ulTag.append(firstNameLi, lastNameLi, signingDate)
+    ulTag.append(usernameLi, firstNameLi, lastNameLi, signingDate)
 }

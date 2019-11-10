@@ -1,0 +1,24 @@
+​
+#tableOfContents {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 20px;
+    align-items: center;
+    border: 2px solid peru;
+    padding: 20px;
+}
+​
+a {
+    display: block;
+    border: 2px solid black;
+    padding: 20px;
+    width: 10vw;
+    justify-content: center;
+    align-items: center;
+}
+
+body {
+    display: grid;
+    grid-template-columns: 20% 80%;
+}
