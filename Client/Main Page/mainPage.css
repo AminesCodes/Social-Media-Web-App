@@ -40,10 +40,11 @@ a {
     border: 1px solid salmon;
     /* padding: 20px; */
     height: 10vh;
+    align-items: center;
 
 }
 
-#postsContainer {
+#dataContainer {
     gap: 20px;
     display: flex;
     flex-direction: column;
@@ -76,12 +77,4 @@ img {
 .finalContainer {
     border: 1px solid black;
     border-radius: 2%;
-}
-
-#postContainer,
-#picturesContainer {
-    display: flex;
-    flex-direction: row;
-    ;
-    flex-wrap: wrap;
 }
