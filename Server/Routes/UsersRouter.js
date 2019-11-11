@@ -134,6 +134,7 @@ const addUser = async (request, response, next) => {
             next();
         } catch (err) {
             console.log(err);
+            response.status(500)
             response.json({
                 status: 'failed',
                 message: 'Something went wrong, Please double check your inputs'
@@ -152,10 +153,10 @@ const getConcernedUser = (request, response) => {
             body: request.secureTargetUser
         });
     } else {
-        response.status(500);
+        response.status(400);
         response.json({
             status: 'failed',
-            message: 'Something went wrong!!'
+            message: 'User does not exist !!'
         }); 
     }
 }
@@ -415,6 +416,7 @@ const deleteUser = async (request, response) => {
       })
     } catch (err) {
       console.log(err);
+      response.status(500)
       response.json({
         status: 'failed',
         message: 'Something went wrong'
