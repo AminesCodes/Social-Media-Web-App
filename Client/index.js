@@ -1,4 +1,4 @@
-let baseURL = 'http://localhost:3131'
+const baseURL = 'http://localhost:3131';
 let loggedUsername = false;
 let loggedPassword = false;
 let targetUser = false;
@@ -114,6 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     requestSignIn(username, password, firstName, lastName, dob, feedbackDiv, feedbackText)
                     usernameInput.value = '';
                     passwordInput.value = '';
+                    firstNameInput.value = '';
+                    lastNameInput.value = '';
+                    dateOfBirthInput.value = '';
+
                 } else {
                     feedbackDiv.style.display = 'block';
                     feedbackText.innerText = 'Date of birth should be on the format YYYY-MM-DD';
