@@ -89,7 +89,7 @@ const displayAllComments = (comments) => {
     
 
     for (let i = 0; i < comments.length; i++) {
-
+        let postId = comments[i].post_id
         let pictureId = comments[i].picture_id
         console.log('picture id', pictureId)
 
@@ -140,14 +140,14 @@ const displayAllComments = (comments) => {
         comment.appendChild(deleteDiv)
 
         authorUsername.appendChild(comment)
-
+         addCommentOnPosts(postId)
     }
-    addComment()
+    
 }
 
-const addComment = async() => {
+const addCommentOnPosts = async() => {
     let baseUrl = 'http://localhost:3131'
-    // let endpoint = 
+     //let endpoint1 = 
      
     try {
         let response = await axios.post(`${baseUrl}`)
