@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#album').style.display = 'none'
     }
 
+    let logOut = document.querySelector('button');
+    logOut.addEventListener('click', () => {
+        sessionStorage.removeItem(loggedUsername);
+        sessionStorage.removeItem(loggedPassword);
+        console.log(sessionStorage);
+    })
 })
 
 // this function loads the trending(times a post is liked) likes from the database
@@ -70,15 +76,14 @@ const loadPictureTimesLikedData = async () => {
 const evenListenerOnContainer = () => {
     let cardContainer = document.querySelector('#dataContainer');
     cardContainer.addEventListener('click', async (event) => {
+        let container = event.target.parentNode.parentNode;
         if (event.target.className === 'postTimesLiked') {
-            let container = event.target.parentNode.parentNode;
             let response = await likeAPost(container.id)
             console.log(response.message);
             if (response.message === 'post already liked') {
                 deleteLike(container.id);
             }
         } else if (event.target.className === 'picTimesLiked') {
-            let container = event.target.parentNode.parentNode;
             let response = await likeAPicture(container.id)
             if (response.message === 'picture already liked') {
                 deletePicLike(container.id);
@@ -87,6 +92,9 @@ const evenListenerOnContainer = () => {
         if (event.target.className === 'commentDiv') {
             console.log('hello');
             window.location.href = '../Comment Page/commentsPage.html';
+            sessionStorage.setItem('post_id', `${container.id}`);
+            console.log(sessionStorage.getItem('post_id'));
+
         }
     })
 }
