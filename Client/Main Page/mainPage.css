@@ -1,4 +1,8 @@
 body {
+    height: 100vh;
+}
+
+#bodyContainer {
     display: grid;
     grid-template-columns: 20% 80%;
     /* grid-template-columns: repeat(auto-fill, minmax(5fr, 5fr)); */
@@ -7,11 +11,11 @@ body {
 #tableOfContents {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    /* justify-content: space-evenly; */
     gap: 20px;
     align-items: center;
     border: 2px solid peru;
-    padding: 20px;
+    /* padding: 20px; */
 }
 
 a {
@@ -36,7 +40,7 @@ a {
     border: 1px solid salmon;
     /* padding: 20px; */
     height: 10vh;
-    border-radius: 12%;
+
 }
 
 #postsContainer {
@@ -49,22 +53,35 @@ a {
     display: flex;
     justify-content: space-between;
     border: 1px black;
-    gap: 5px;
+    /* gap: 5px; */
 
 }
 
 .likeContainer div {
     border: 1px solid burlywood;
-    border-radius: 12%;
+    width: 50%;
     padding: 10px;
 }
 
-/* .finalContainer {
+.postBody {
     border: 1px solid black;
-    border-radius: 12%;
-    padding: 9px;
-} */
+    padding: 40px;
+    align-items: center;
+}
 
 img {
     width: 219px;
+}
+
+.finalContainer {
+    border: 1px solid black;
+    border-radius: 2%;
+}
+
+#postContainer,
+#picturesContainer {
+    display: flex;
+    flex-direction: row;
+    ;
+    flex-wrap: wrap;
 }

@@ -32,6 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadPostsTimesLikedData = async () => {
+    // if (!targetUser) {
+    //     url = `http://localhost:3131/likes/posts/times_liked`
+    // } else {
+    //     url = `http://localhost:3131/likes/posts/interest/${loggedUsername}`
+    // }
     url = `http://localhost:3131/likes/posts/times_liked`
     const {
         data
@@ -45,7 +50,7 @@ const loadPostsTimesLikedData = async () => {
 
     // let likingPost = document.querySelector('.finalContainer');
     // console.log(likingPost)
-    evenListenerOnPost()
+    evenListenerOnPostContainer()
 }
 
 // this function loads the trending(times a post is liked) likes from the database
@@ -60,33 +65,68 @@ const loadPictureTimesLikedData = async () => {
     data.body.forEach(el => {
         creatingCardPic(el)
     });
+    evenListenerOnPicContainer()
 }
 
-const evenListenerOnPost = () => {
-    let finalContainer = document.querySelector('#postsContainer');
-    let likingPost = document.querySelector('.finalContainer')
-    // console.log(likingPost);
-    finalContainer.addEventListener('click', async (event) => {
+//event listener
+const evenListenerOnPostContainer = () => {
+    let cardContainer = document.querySelector('#postsContainer');
+    cardContainer.addEventListener('click', async (event) => {
         if (event.target.className === 'timesLiked') {
-            console.log(likingPost.id);
-
-            let response = await likeAPost(likingPost.id)
+            let container = event.target.parentNode.parentNode;
+            let response = await likeAPost(container.id)
             console.log(response.message);
             if (response.message === 'post already liked') {
-                deleteLike(likingPost.id);
+                deleteLike(container.id);
             }
         }
         if (event.target.className === 'commentDiv') {
             console.log('hello');
-
+            window.location.href = '../Comment Page/commentsPage.html';
         }
+    })
+}
 
+//event listener
+const evenListenerOnPicContainer = () => {
+    let cardContainer = document.querySelector('#picturesContainer');
+    cardContainer.addEventListener('click', async (event) => {
+        if (event.target.className === 'timesLiked') {
+            let container = event.target.parentNode.parentNode;
+            let response = await likeAPicture(container.id)
+            if (response.message === 'picture already liked') {
+                deleteLike(container.id);
+            }
+        }
+        if (event.target.className === 'commentDiv') {
+            console.log('hello');
+            window.location.href = '../Comment Page/commentsPage.html';
+        }
     })
 }
 
 //this function is to like a users post
 const likeAPost = async (postId) => {
     url = `http://localhost:3131/likes/posts/${postId}`;
+
+    //user login information object
+    let loginInfo = {
+        loggedUsername: 'vonbar',
+        loggedPassword: '123'
+    };
+    try {
+        const {
+            data
+        } = await axios.post(url, loginInfo);
+        console.log('this is data', data)
+        return data;
+    } catch (err) {
+        console.log(err)
+    }
+}
+//this function is to like a users post
+const likeAPicture = async (postId) => {
+    url = `http://localhost:3131/likes/pictures/${postId}`;
 
     //user login information object
     let loginInfo = {
@@ -193,6 +233,7 @@ const creatingCardPic = async (el) => {
     userContainer.className = 'userName';
     likeContainer.className = 'likeContainer';
     finalContainer.className = 'finalContainer';
+    finalContainer.id = el.picture_id
     commentDiv.className = 'commentDiv';
     times_liked.className = 'timesLiked';
     commentDiv.innerText = 'Comments';
