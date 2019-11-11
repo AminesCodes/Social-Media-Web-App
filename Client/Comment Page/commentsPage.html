@@ -14,7 +14,7 @@
 ​
 
 <body>
-    <div class="main-container">
+    <!-- <div class="main-container"> -->
         <div id="tableOfContents">
             <h1>Comments</h1>
             <a href="placeholder" id="user-info">User Info</a>
@@ -29,18 +29,27 @@
             <br>
             <a href="../../index.html">Home</a>
             <br>
-            <button>Log out</button>
+            <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
         </div>
     ​
+    <h3>Feed</h3>
+    <div id="all-comments-container">
+        <button id="get-all-comments">Get All Comments By User</button>
+    </div>
+    <div id="add-div">
+        <form>
+            <textarea cols="70" rows="10" placeholder="Enter comment"></textarea>
+            <button id="submit" type="submit">Post Comments </button>
+        </form>
+     </div>
+     
         <div id="feed">
-            <h3>Feed</h3>
-            <div id="postsContainer">
-                <button id="get-all-comments">getAllComments</button>
-            </div>
+            <div id="postsContainer"></div>
 
             <div id="picturesContainer"></div>
+            
         </div>
-    </div>
+    <!-- </div> -->
 </body>
 ​
 

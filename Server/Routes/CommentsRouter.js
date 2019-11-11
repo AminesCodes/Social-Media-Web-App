@@ -72,7 +72,23 @@ const authenticateUser = (request, response, next) => {
 // This route is to find all the comments made on posts and pictures.
 const getAllComments = async (req, res) => {
     try {
-        let allComments = await db.any('SELECT * FROM comments')
+        const requestQuery = `SELECT comments.id AS comment_id,
+ owner_username, 
+ album_id,
+  picture_link,
+   author_username,
+    picture_id,
+     comment,
+      body, 
+      poster_username,
+      post_id
+      FROM albums JOIN pictures ON albums.id = album_id 
+      FULL OUTER JOIN comments ON pictures.id = picture_id 
+      FULL OUTER JOIN posts ON post_id = posts.id 
+      WHERE comment IS NOT NULL 
+      ORDER BY post_id DESC, picture_id DESC
+`
+        let allComments = await db.any(requestQuery)
         res.json({
             body: allComments,
             message: 'Successfully retrieved all comments'
@@ -84,6 +100,38 @@ const getAllComments = async (req, res) => {
     }
 }
 router.get('/', getAllComments)
+
+const getAllCommentsByUsername = async (req, res) => {
+    const username = req.params.username;
+    try {
+        const requestQuery = `SELECT comments.id AS comment_id,
+ owner_username, 
+ album_id,
+  picture_link,
+   author_username,
+    picture_id,
+     comment,
+      body, 
+      poster_username,
+      post_id 
+      FROM albums JOIN pictures ON albums.id = album_id 
+      FULL OUTER JOIN comments ON pictures.id = picture_id 
+      FULL OUTER JOIN posts ON post_id = posts.id 
+      WHERE author_username = $1 AND comment IS NOT NULL 
+      ORDER BY post_id DESC, picture_id DESC
+`
+        let allComments = await db.any(requestQuery, username)
+        res.json({
+            body: allComments,
+            message: 'Successfully retrieved all comments'
+        })
+    } catch (error) {
+        res.json({
+            message: 'Something went wrong'
+        })
+    }
+}
+router.get('/:username', getAllCommentsByUsername)
 
 // route to get comments from comments from a particular post
 
