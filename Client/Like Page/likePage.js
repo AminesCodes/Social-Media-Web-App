@@ -2,6 +2,7 @@ let url;
 let loggedUsername = sessionStorage.getItem('loggedUsername');
 let loggedPassword = sessionStorage.getItem('loggedPassword');
 let targetUser = sessionStorage.getItem('targetUser');
+let dataArr = [];
 let num = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -81,7 +82,10 @@ const loadTargetUserLikedPostData = async () => {
     } = await axios.get(url);
     console.log(data);
 
-    creatingCardPost(data.body[num])
+    data.body.forEach(el => {
+        dataArr.push(el)
+    });
+    creatingCardPost(dataArr[num])
 }
 
 // this function loads the trending(times a post is liked) likes from the database
