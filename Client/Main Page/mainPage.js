@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadPostsTimesLikedData = async () => {
-    !targetUser ? url = `http://localhost:3131/likes/posts/times_liked` : url = `http://localhost:3131/likes/posts/interest/${targetUser}`
+    url = `http://localhost:3131/likes/posts/times_liked`
     const {
         data
     } = await axios.get(url);
@@ -85,7 +85,7 @@ const loadPostsTimesLikedData = async () => {
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadPictureTimesLikedData = async () => {
-    !targetUser ? url = `http://localhost:3131/likes/pictures/times_liked` : url = `http://localhost:3131/likes/pictures/interest/${targetUser}`
+    url = `http://localhost:3131/likes/pictures/times_liked`
     const {
         data
     } = await axios.get(url);
@@ -171,10 +171,9 @@ const deletePicLike = async (picId) => {
 //function to clear screen
 const clearScreen = async () => {
     let container = getDataContainer()
-    // while (container.firstChild) {
-    //     container.removeChild(container.firstChild)
-    // }
-    container.textContent = ''
+    while (container.firstChild) {
+        container.removeChild(container.firstChild)
+    }
 }
 
 
