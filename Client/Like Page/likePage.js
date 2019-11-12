@@ -2,22 +2,21 @@ let url;
 let loggedUsername = sessionStorage.getItem('loggedUsername');
 let loggedPassword = sessionStorage.getItem('loggedPassword');
 let targetUser = sessionStorage.getItem('targetUser');
+let num = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadPostsTimesLikedData();
-    // loadPictureTimesLikedData();
-
+    loadTargetUserLikedPostData();
     let feedForm = document.querySelector('#toggle');
     let toggle = 'posts'
     feedForm.addEventListener('click', (event) => {
         event.preventDefault();
         if (toggle === 'posts') {
             clearScreen()
-            loadPictureTimesLikedData();
+            loadTargetUserLikedPicsData();
             toggle = 'pictures'
         } else if (toggle === 'pictures') {
             clearScreen()
-            loadPostsTimesLikedData();
+            loadTargetUserLikedPostData();
             toggle = 'posts'
         }
 
@@ -67,27 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
     })
-
-    let prevForward = document.querySelector('#backAndForth');
-    prevForward.addEventListener('click', async (event) => {
-        if (event.target.id === 'previous') {
-            let tarGet = event.target.parentNode.parentNode;
-            let response = await likeAPost(tarGet.id)
-            console.log(response.message);
-            if (response.message === 'post already liked') {
-                deletePostLike(tarGet.id);
-            }
-        }
-        if (event.target.id === 'next') {
-            let tarGet = event.target.parentNode.parentNode;
-            console.log(tarGet);
-            let response = await likeAPicture(tarGet.id)
-            if (response.message === 'picture already liked') {
-                await deletePicLike(tarGet.id);
-            }
-        }
-    })
-
 })
 
 const add = () => {
@@ -95,7 +73,7 @@ const add = () => {
 }
 
 // this function loads the trending(times a post is liked) likes from the database
-const loadPostsTimesLikedData = async () => {
+const loadTargetUserLikedPostData = async () => {
     targetUser = 'jenama'
     url = `http://localhost:3131/likes/posts/interest/${targetUser}`
     const {
@@ -103,11 +81,11 @@ const loadPostsTimesLikedData = async () => {
     } = await axios.get(url);
     console.log(data);
 
-    creatingCardPost(data.body[0])
+    creatingCardPost(data.body[num])
 }
 
 // this function loads the trending(times a post is liked) likes from the database
-const loadPictureTimesLikedData = async () => {
+const loadTargetUserLikedPicsData = async () => {
     targetUser = 'vonbar'
     url = `http://localhost:3131/likes/pictures/interest/${targetUser}`
     const {
@@ -115,9 +93,20 @@ const loadPictureTimesLikedData = async () => {
     } = await axios.get(url);
     console.log(data);
 
-    creatingCardPost(data.body[0])
+    //this event listener allows the user to move back and forth between the posts and pictures they liked
+    let prevForward = document.querySelector('#next');
+    prevForward.addEventListener('click', async (event) => {
+        event.preventDefault()
+        console.log('gired');
 
-    // evenListenerOnContainer()
+        // if (event.target.id === 'previous') {
+        //     num--;
+        // }
+        // if (event.target.id === 'next') {
+        num++
+        // }
+    })
+    creatingCardPost(data.body[num])
 }
 
 //this function is to like a users post
