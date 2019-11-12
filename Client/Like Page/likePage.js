@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#album').style.display = 'none'
     }
 
-    //event listener on the comments and likes div
+    //event listener on the comments and likes div to post or delete like
     let cardContainer = document.querySelector('#dataContainer');
     cardContainer.addEventListener('click', async (event) => {
         if (event.target.className === 'postTimesLiked') {
@@ -67,7 +67,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
     })
+
+    let prevForward = document.querySelector('#backAndForth');
+    prevForward.addEventListener('click', async (event) => {
+        if (event.target.id === 'previous') {
+            let tarGet = event.target.parentNode.parentNode;
+            let response = await likeAPost(tarGet.id)
+            console.log(response.message);
+            if (response.message === 'post already liked') {
+                deletePostLike(tarGet.id);
+            }
+        }
+        if (event.target.id === 'next') {
+            let tarGet = event.target.parentNode.parentNode;
+            console.log(tarGet);
+            let response = await likeAPicture(tarGet.id)
+            if (response.message === 'picture already liked') {
+                await deletePicLike(tarGet.id);
+            }
+        }
+    })
+
 })
+
+const add = () => {
+
+}
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadPostsTimesLikedData = async () => {
@@ -78,10 +103,7 @@ const loadPostsTimesLikedData = async () => {
     } = await axios.get(url);
     console.log(data);
 
-    // data.body.forEach(el => {
     creatingCardPost(data.body[0])
-    // });
-    // evenListenerOnContainer()
 }
 
 // this function loads the trending(times a post is liked) likes from the database
@@ -93,9 +115,8 @@ const loadPictureTimesLikedData = async () => {
     } = await axios.get(url);
     console.log(data);
 
-    data.body.forEach(el => {
-        creatingCardPost(el)
-    });
+    creatingCardPost(data.body[0])
+
     // evenListenerOnContainer()
 }
 
