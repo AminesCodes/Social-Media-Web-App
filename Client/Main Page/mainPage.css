@@ -1,21 +1,22 @@
 body {
-    height: 100vh;
+    /* height: 100vh; */
 }
 
 #bodyContainer {
     display: grid;
     grid-template-columns: 20% 80%;
+    height: 95vh;
     /* grid-template-columns: repeat(auto-fill, minmax(5fr, 5fr)); */
 }
 
 #tableOfContents {
     display: flex;
     flex-direction: column;
-    /* justify-content: space-evenly; */
+    justify-content: space-evenly;
     gap: 20px;
     align-items: center;
     border: 2px solid peru;
-    /* padding: 20px; */
+    padding: 20px;
 }
 
 a {
@@ -71,10 +72,19 @@ a {
 }
 
 img {
-    width: 219px;
+    width: 100%;
 }
 
 .finalContainer {
     border: 1px solid black;
     border-radius: 2%;
+    width: 90%;
+    height: 30%
+}
+
+#overFlow {
+    height: 95vh;
+    overflow: scroll;
+    text-align: center;
+    width: 55vw;
 }

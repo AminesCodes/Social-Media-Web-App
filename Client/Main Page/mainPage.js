@@ -7,14 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPostsTimesLikedData();
     // loadPictureTimesLikedData();
 
-    let feedForm = document.querySelector('#feedForm');
+    let feedForm = document.querySelector('#toggle');
     let toggle = 'posts'
-    feedForm.addEventListener('submit', (event) => {
+    feedForm.addEventListener('click', (event) => {
         event.preventDefault();
         if (toggle === 'posts') {
             clearScreen()
             loadPictureTimesLikedData();
-
             toggle = 'pictures'
         } else if (toggle === 'pictures') {
             clearScreen()
@@ -24,72 +23,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     })
 
+    // BUTTON
+    const logoutBtn = document.querySelector('#logoutBtn');
+    logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem("loggedUsername");
+        sessionStorage.removeItem("loggedPassword");
+        sessionStorage.removeItem("targetUser");
+        // console.log(sessionStorage)
+        window.location.href = '../../index.html';
+        console.log(sessionStorage)
+    })
+
     if (!loggedUsername) {
-        document.querySelector('button').style.display = 'none'
+        logoutBtn.innerText = 'Home'
         document.querySelector('#album').style.display = 'none'
     }
 
-    let logOut = document.querySelector('button');
-    logOut.addEventListener('click', () => {
-        sessionStorage.removeItem(loggedUsername);
-        sessionStorage.removeItem(loggedPassword);
-        console.log(sessionStorage);
-    })
-})
-
-// this function loads the trending(times a post is liked) likes from the database
-const loadPostsTimesLikedData = async () => {
-    if (!targetUser) {
-        url = `http://localhost:3131/likes/posts/times_liked`
-    } else {
-        url = `http://localhost:3131/likes/posts/interest/${targetUser}`
-    }
-    // url = `http://localhost:3131/likes/posts/times_liked`
-    const {
-        data
-    } = await axios.get(url);
-
-    console.log(data);
-
-    data.body.forEach(el => {
-        creatingCardPost(el)
-    });
-    evenListenerOnContainer()
-}
-
-// this function loads the trending(times a post is liked) likes from the database
-const loadPictureTimesLikedData = async () => {
-    url = `http://localhost:3131/likes/pictures/times_liked`
-    const {
-        data
-    } = await axios.get(url);
-
-    console.log(data);
-
-    data.body.forEach(el => {
-        creatingCardPost(el)
-    });
-    evenListenerOnContainer()
-}
-
-//event listener
-const evenListenerOnContainer = () => {
+    //event listener on the comments and likes div
     let cardContainer = document.querySelector('#dataContainer');
     cardContainer.addEventListener('click', async (event) => {
-        let container = event.target.parentNode.parentNode;
         if (event.target.className === 'postTimesLiked') {
+            let container = event.target.parentNode.parentNode;
             let response = await likeAPost(container.id)
             console.log(response.message);
             if (response.message === 'post already liked') {
-                deleteLike(container.id);
+                deletePostLike(container.id);
             }
-        } else if (event.target.className === 'picTimesLiked') {
+        }
+        if (event.target.className === 'picTimesLiked') {
+            let container = event.target.parentNode.parentNode;
+            console.log(container);
             let response = await likeAPicture(container.id)
             if (response.message === 'picture already liked') {
-                deletePicLike(container.id);
+                await deletePicLike(container.id);
             }
         }
         if (event.target.className === 'commentDiv') {
+            let container = event.target.parentNode.parentNode;
             console.log('hello');
             window.location.href = '../Comment Page/commentsPage.html';
             sessionStorage.setItem('post_id', `${container.id}`);
@@ -97,6 +67,34 @@ const evenListenerOnContainer = () => {
 
         }
     })
+})
+
+// this function loads the trending(times a post is liked) likes from the database
+const loadPostsTimesLikedData = async () => {
+    !targetUser ? url = `http://localhost:3131/likes/posts/times_liked` : url = `http://localhost:3131/likes/posts/interest/${targetUser}`
+    const {
+        data
+    } = await axios.get(url);
+    console.log(data);
+
+    data.body.forEach(el => {
+        creatingCardPost(el)
+    });
+    // evenListenerOnContainer()
+}
+
+// this function loads the trending(times a post is liked) likes from the database
+const loadPictureTimesLikedData = async () => {
+    !targetUser ? url = `http://localhost:3131/likes/pictures/times_liked` : url = `http://localhost:3131/likes/pictures/interest/${targetUser}`
+    const {
+        data
+    } = await axios.get(url);
+    console.log(data);
+
+    data.body.forEach(el => {
+        creatingCardPost(el)
+    });
+    // evenListenerOnContainer()
 }
 
 //this function is to like a users post
@@ -120,7 +118,7 @@ const likeAPost = async (postId) => {
 }
 //this function is to like a users post
 const likeAPicture = async (postId) => {
-    url = `http://localhost:3131/likes/pictures/${postId}`;
+    url = `http://localhost:3131/likes/pictures/${postId}`
 
     //user login information object
     let loginInfo = {
@@ -131,7 +129,7 @@ const likeAPicture = async (postId) => {
         const {
             data
         } = await axios.post(url, loginInfo);
-        console.log('this is data', data)
+        // console.log('this is data', data)
         return data;
     } catch (err) {
         console.log(err)
@@ -139,7 +137,7 @@ const likeAPicture = async (postId) => {
 }
 
 //this function deletes a like
-const deleteLike = async (postId) => {
+const deletePostLike = async (postId) => {
     url = `http://localhost:3131/likes/posts/${postId}/delete`
     console.log('called')
     //user login information object
@@ -155,8 +153,8 @@ const deleteLike = async (postId) => {
 }
 
 //this function deletes a like
-const deletePicLike = async (postId) => {
-    url = `http://localhost:3131/likes/pictures/${postId}/delete`
+const deletePicLike = async (picId) => {
+    url = `http://localhost:3131/likes/pictures/${picId}/delete`
     console.log('called')
     //user login information object
     let loginInfo = {
@@ -172,10 +170,11 @@ const deletePicLike = async (postId) => {
 
 //function to clear screen
 const clearScreen = async () => {
-    container = getDataContainer()
-    while (container.firstChild) {
-        container.removeChild(container.firstChild)
-    }
+    let container = getDataContainer()
+    // while (container.firstChild) {
+    //     container.removeChild(container.firstChild)
+    // }
+    container.textContent = ''
 }
 
 
@@ -184,7 +183,7 @@ const getDataContainer = () => document.querySelector('#dataContainer')
 
 //This function create the cards on the create that will hold the axios information
 const creatingCardPost = async (el) => {
-    const postsContainer = getDataContainer()
+    const dataContainer = getDataContainer()
 
     //creating the elements that will hold the information on the pokemon
     const userContainer = creatingElem('div');
@@ -230,7 +229,7 @@ const creatingCardPost = async (el) => {
     }
 
     //appending thd UserContainer that holds the created elements to the container
-    postsContainer.append(finalContainer);
+    dataContainer.append(finalContainer);
 
     //this function creates elements
     function creatingElem(elem) {
