@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     feedForm.addEventListener('click', (event) => {
         event.preventDefault();
         if (toggle === 'posts') {
-            clearScreen()
+            // clearScreen()
             loadPictureTimesLikedData();
             toggle = 'pictures'
         } else if (toggle === 'pictures') {
-            clearScreen()
+            // clearScreen()
             loadPostsTimesLikedData();
             toggle = 'posts'
         }
@@ -47,8 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             let response = await likeAPost(container.id)
             console.log(response.message);
             if (response.message === 'post already liked') {
-                deletePostLike(container.id);
+                await deletePostLike(container.id);
             }
+            loadPostsTimesLikedData()
         }
         if (event.target.className === 'picTimesLiked') {
             let container = event.target.parentNode.parentNode;
@@ -57,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.message === 'picture already liked') {
                 await deletePicLike(container.id);
             }
+            loadPictureTimesLikedData()
         }
         if (event.target.className === 'commentDiv') {
             let container = event.target.parentNode.parentNode;
@@ -71,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadPostsTimesLikedData = async () => {
+    clearScreen()
     url = `http://localhost:3131/likes/posts/times_liked`
     const {
         data
@@ -80,11 +83,11 @@ const loadPostsTimesLikedData = async () => {
     data.body.forEach(el => {
         creatingCardPost(el)
     });
-    // evenListenerOnContainer()
 }
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadPictureTimesLikedData = async () => {
+    clearScreen()
     url = `http://localhost:3131/likes/pictures/times_liked`
     const {
         data
@@ -94,7 +97,6 @@ const loadPictureTimesLikedData = async () => {
     data.body.forEach(el => {
         creatingCardPost(el)
     });
-    // evenListenerOnContainer()
 }
 
 //this function is to like a users post
