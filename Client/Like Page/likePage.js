@@ -71,20 +71,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadPostsTimesLikedData = async () => {
+    targetUser = 'jenama'
     url = `http://localhost:3131/likes/posts/interest/${targetUser}`
     const {
         data
     } = await axios.get(url);
     console.log(data);
 
-    data.body.forEach(el => {
-        creatingCardPost(el)
-    });
+    // data.body.forEach(el => {
+    creatingCardPost(data.body[0])
+    // });
     // evenListenerOnContainer()
 }
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadPictureTimesLikedData = async () => {
+    targetUser = 'vonbar'
     url = `http://localhost:3131/likes/pictures/interest/${targetUser}`
     const {
         data
@@ -210,6 +212,8 @@ const creatingCardPost = async (el) => {
     if (el.body) {
         times_liked.className = 'postTimesLiked';
         finalContainer.id = el.post_id
+        console.log('hello', el.post_id);
+
         username.innerText = `This post by: ${el.poster_username}`
         body.innerText = `Text: ${el.body}`
         times_liked.innerText = `Liked: ${el.times_liked} times`;
