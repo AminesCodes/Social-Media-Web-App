@@ -104,6 +104,7 @@ const likeAPost = async (postId) => {
     url = `http://localhost:3131/likes/posts/${postId}`;
 
     //user login information object
+    //to review
     let loginInfo = {
         loggedUsername: 'vonbar',
         loggedPassword: '123'
@@ -123,6 +124,7 @@ const likeAPicture = async (postId) => {
     url = `http://localhost:3131/likes/pictures/${postId}`
 
     //user login information object
+    //to review
     let loginInfo = {
         loggedUsername: 'vonbar',
         loggedPassword: '123'
