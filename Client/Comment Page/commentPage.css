@@ -156,6 +156,13 @@ img {
     padding: 2px;
 } */
 
+#postContainer>div~div {
+    border: 1px solid rgb(124, 136, 58);
+    gap: 10px;
+    padding: 10px;
+    align-items: left;
+}
+
 .post~div>div {
     border: 1px solid rgb(124, 136, 58);
     gap: 10px;

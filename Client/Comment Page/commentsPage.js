@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // to review
             form.id = `deleteCommentOnPicture`
             let pictureID = event.target.parentNode.parentNode.firstChild.id // picture_id
-            console.log('picture id', pictureID)
+           
             // form.className = `{picture_id: ${pictureID}, comment_id: ${event.target.className}}`
             deleteComment('pictures', `{"target_id": ${pictureID}, "comment_id": ${event.target.className}}`)
         }
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addDiv.style.display = 'block'
             newComment.value = event.target.innerText
             //updateComments('post', `{"target_id": ${postId}, "comment_id": ${event.target.className}`)
-            console.log(event.target.className)
+           
         } else if (event.target.parentNode.parentNode.className === 'picture' && event.target.innerText !== 'X') {
             form.id = `updateCommentOnPicture`
             let pictureID = event.target.parentNode.parentNode.firstChild.id // picture_id
