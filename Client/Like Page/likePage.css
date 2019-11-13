@@ -89,3 +89,19 @@ img {
     display: flex;
     gap: 580px;
 }
+
+#clearScreen {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.commentForm {
+    border-radius: 12%;
+}
+
+#comments {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}

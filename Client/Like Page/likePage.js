@@ -3,23 +3,25 @@ let loggedUsername = sessionStorage.getItem('loggedUsername');
 let loggedPassword = sessionStorage.getItem('loggedPassword');
 let targetUser = sessionStorage.getItem('targetUser');
 let dataArr = [];
-let num = 0;
+let postNum = 0;
+let picNum = 0;
+let numOfLikesArray = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     loadTargetUserLikedPostData();
     let feedForm = document.querySelector('#toggle');
-    let toggle = 'posts'
+    console.log(feedForm)
     feedForm.addEventListener('click', (event) => {
-        event.preventDefault();
-        if (toggle === 'posts') {
-            clearScreen()
+        console.log('THIS ONE ', event.target.id)
+        if (event.target.id === 'toggle' && feedForm.className === 'postsLoad') {
+            // clearScreen()
             loadTargetUserLikedPicsData();
-            toggle = 'pictures'
-        } else if (toggle === 'pictures') {
+            feedForm.className = 'picturesLoad'
+        } else if (event.target.id === 'toggle' && feedForm.className === 'picturesLoad') {
             // num = 0;
-            clearScreen()
+            // clearScreen()
             loadTargetUserLikedPostData();
-            toggle = 'posts'
+            feedForm.className = 'postsLoad'
         }
 
     })
@@ -39,57 +41,93 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutBtn.innerText = 'Home'
         // document.querySelector('#album').style.display = 'none'
     }
+    document.querySelector('#comments').style.visibility = 'hidden';
 
     //event listener on the comments and likes div to post or delete like
     let cardContainer = document.querySelector('#dataContainer');
     cardContainer.addEventListener('click', async (event) => {
-        event.preventDefault()
+        console.log('div ====', cardContainer)
+        console.log('here')
+
         if (event.target.className === 'postTimesLiked') {
             let container = event.target.parentNode.parentNode;
             let response = await likeAPost(container.id)
+            creatingCard('posts', dataArr[num])
             console.log(response.message);
             if (response.message === 'post already liked') {
-                deletePostLike(container.id);
+                await deletePostLike(container.id);
+                creatingCard('posts', dataArr[num])
             }
         }
         if (event.target.className === 'picTimesLiked') {
             let container = event.target.parentNode.parentNode;
             console.log(container);
             let response = await likeAPicture(container.id)
+            creatingCard('pictures', dataArr[num])
             if (response.message === 'picture already liked') {
                 await deletePicLike(container.id);
+                creatingCard('pictures', dataArr[num])
             }
         }
         if (event.target.className === 'commentDiv') {
+            document.querySelector('#comments').style.visibility = 'initial';
             let container = event.target.parentNode.parentNode;
             console.log(container);
-            // window.location.href = '../Comment Page/commentsPage.html';
-            // sessionStorage.setItem('post_id', `${container.id}`);
-            // console.log(sessionStorage.getItem('post_id'));
-            loadCommentsData(container.id)
 
+            loadCommentsData(container.id);
         }
     })
 
     //event listener on the previous and next button
-    let backAndForth = document.querySelector('#backAndForth');
+    let backAndForth = document.querySelector('#backAndForthButtons');
     backAndForth.addEventListener('click', async (event) => {
-        console.log('fired');
+        const toggleBTN = event.target.parentNode.parentNode.firstChild.nextSibling;
+        let route;
+        if (toggleBTN.className === 'postsLoad') {
+            route = 'posts'
+        }
+        if (toggleBTN.className === 'picturesLoad') {
+            route = 'pictures'
+        }
+
+        // console.log(event.target.parentNode.parentNode.firstChild.nextSibling)
+        // console.log('fired');
         event.preventDefault();
         if (event.target.id === 'previous') {
-            if (num <= 0) {
-                num = dataArr.length;
+            if (route === 'posts') {
+                postNum--;
+                if (postNum < 0) {
+                    postNum = dataArr.length - 1;
+                }
+                displayData(route, postNum)
+            } else if (route === 'pictures') {
+                picNum--;
+                if (picNum < 0) {
+                    picNum = dataArr.length - 1;
+                }
+                displayData(route, picNum)
             }
-            num--;
-            displayData()
+            clearComments()
+            document.querySelector('#comments').style.visibility = 'hidden';
+
         }
         if (event.target.id === 'next') {
-            num++;
-            console.log(num);
-            if (num >= dataArr.length) {
-                num = 0;
+            if (route === 'posts') {
+                postNum++;
+                if (postNum > dataArr.length - 1) {
+                    postNum = 0;
+                }
+                displayData(route, postNum)
+            } else if (route === 'pictures') {
+                picNum++;
+                if (picNum > dataArr.length - 1) {
+                    picNum = 0;
+                }
+                displayData(route, picNum)
             }
-            displayData()
+            clearComments()
+            document.querySelector('#comments').style.visibility = 'hidden';
+
         }
     })
 })
@@ -107,17 +145,17 @@ const loadTargetUserLikedPostData = async () => {
 
     dataArr = data.body;
     console.log('help', dataArr);
-    creatingCard(dataArr[num])
+    creatingCard('posts', dataArr[postNum])
 }
-const displayData = () => {
+const displayData = (route, num) => {
+    console.log('THIS IS NUM', num)
     clearScreen()
-
-    creatingCard(dataArr[num])
+    creatingCard(route, dataArr[num]) // TO REVIEW
 }
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadTargetUserLikedPicsData = async () => {
-    console.log(num);
+   
 
     //to review
     targetUser = 'vonbar'
@@ -128,19 +166,45 @@ const loadTargetUserLikedPicsData = async () => {
     console.log(data);
 
     dataArr = data.body;
-    creatingCard(dataArr[num])
+    creatingCard('pictures', dataArr[picNum])
 }
 
+//function to load the comments data
 const loadCommentsData = async (postId) => {
-    clearScreen()
+    clearComments()
     url = `http://localhost:3131/comments/posts/${postId}`
 
+    try {
+        const {
+            data
+        } = await axios.get(url)
+        console.log(data);
+        data.body.forEach(elem => {
+            creatingCommentCard(elem)
+        });
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+
+//function to load the number of likes
+const loadNumOfLikes = async (endpoint, id) => {
+    console.log('called')
+    url = `http://localhost:3131/likes/${endpoint}/${id}`
+
+    // try {
     const {
         data
     } = await axios.get(url)
-    console.log(data);
 
-    // creatingCard(data.body[num])
+    // } catch (error) {
+    //     console.log(error);
+
+    // }
+    numOfLikesArray = data.body;
+    console.log('bye', numOfLikesArray);
+    return numOfLikesArray
 }
 
 //this function is to like a users post
@@ -215,8 +279,13 @@ const deletePicLike = async (picId) => {
 }
 
 //function to clear screen
-const clearScreen = async () => {
+const clearScreen = () => {
     let container = getDataContainer()
+    container.textContent = ''
+}
+
+const clearComments = () => {
+    let container = document.querySelector('#comments')
     while (container.firstChild) {
         container.removeChild(container.firstChild)
     }
@@ -227,8 +296,20 @@ const clearScreen = async () => {
 const getDataContainer = () => document.querySelector('#dataContainer')
 
 //This function create the cards on the create that will hold the axios information
-const creatingCard = (el) => {
+const creatingCard = async (route, el) => {
+    clearScreen();
     const dataContainer = getDataContainer()
+    console.log('look here', el)
+    let likesCount;
+    console.log('postID', el.post_id);
+
+    if (el.post_id) {
+        likesCount = await loadNumOfLikes(route, el.post_id)
+    } else if (el.picture_id) {
+        likesCount = await loadNumOfLikes(route, el.picture_id)
+    }
+    console.log('likesCounted', likesCount.length);
+
 
     //creating the elements that will hold the information on the pokemon
     const userContainer = creatingElem('div');
@@ -257,10 +338,10 @@ const creatingCard = (el) => {
         times_liked.className = 'postTimesLiked';
         finalContainer.id = el.post_id
         console.log('hello', el.post_id);
-
         username.innerText = `This post by: ${el.poster_username}`
         body.innerText = `Text: ${el.body}`
-        times_liked.innerText = `Liked: ${el.times_liked} times`;
+        console.log('HERE !!!!!', likesCount.length)
+        times_liked.innerText = `Liked: ${likesCount.length} times`;
         userContainer.append(username);
         likeContainer.append(commentDiv, times_liked);
         finalContainer.append(userContainer, body, likeContainer)
@@ -269,17 +350,42 @@ const creatingCard = (el) => {
         finalContainer.id = el.picture_id
         username.innerText = `Owner: ${el.owner_username}`
         pic.src = el.picture_link
-        times_liked.innerText = `Liked: ${el.times_liked} times`;
+        times_liked.innerText = `Liked: ${likesCount.length} times`;
         userContainer.append(username);
         likeContainer.append(commentDiv, times_liked);
         finalContainer.append(userContainer, pic, likeContainer);
     }
 
     //appending thd UserContainer that holds the created elements to the container
-    dataContainer.append(finalContainer);
-
-    //this function creates elements
-    function creatingElem(elem) {
-        return document.createElement(`${elem}`)
-    }
+    dataContainer.prepend(finalContainer);
 }
+
+const creatingCommentCard = (comEl) => {
+    let backAndForthDiv = document.querySelector('#dataContainer');
+    let commentsContainer = document.querySelector('#comments')
+
+    //creating nescessary tage to hold data
+    let authorContainer = creatingElem('div');
+    let commentForm = creatingElem('div');
+    let username = creatingElem('p');
+    let commentDiv = creatingElem('div');
+    let comment = creatingElem('p');
+
+    commentForm.className = 'commentForm';
+    authorContainer.className = 'userName';
+    commentDiv.className = 'postBody'
+    //setting the innerText of tags
+    username.innerText = comEl.author_username;
+    comment.innerText = comEl.comment;
+
+    //appending information to create cards
+    commentDiv.append(comment)
+    authorContainer.append(username);
+    commentForm.append(authorContainer, commentDiv)
+
+    commentsContainer.append(commentForm);
+    // backAndForthDiv.append(commentsContainer);
+}
+
+//this function creates elements
+const creatingElem = (elem) => document.createElement(`${elem}`);
