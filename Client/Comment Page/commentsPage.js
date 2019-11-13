@@ -2,7 +2,38 @@ let loggedUsername = sessionStorage.getItem('loggedUsername');
 let loggedPassword = sessionStorage.getItem('loggedPassword');
 let targetUser = sessionStorage.getItem('targetUser');
 
-document.addEventListener('DOMContentLoaded', () => {
+const baseURL = 'http://localhost:3131';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // BUTTON
+    const logoutBtn = document.querySelector('#logoutBtn');
+
+    logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem("loggedUsername");
+        sessionStorage.removeItem("loggedPassword");
+        sessionStorage.removeItem("targetUser");
+
+        window.location.href = '../../index.html';
+    })
+
+    // TABLE OF CONTENT
+    const tableOfContents = document.querySelector('#tableOfContents');
+
+    tableOfContents.addEventListener('click', (event) => {
+        if (event.target.nodeName === 'A') {
+            sessionStorage.removeItem("targetUser");
+        }
+    })
+
+    const loggedUserTag = document.querySelector('#loggedUser');
+    if (!loggedUsername) {
+        logoutBtn.innerText = 'Home';
+        loggedUserTag.innerText = targetUser;
+    } else if (loggedUsername) {
+        let userInfo = await getInfoAboutUser(loggedUsername);
+        loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
+    }
+
     let posts = document.querySelector('#postsContainer') // this divs holds comments on posts
     let pictures = document.querySelector('#picturesContainer') // holds comments on pictures
 
@@ -244,5 +275,16 @@ const deleteComment = async (route, targetId) => {
 
     } catch (error) {
         console.log('Bad Request')
+    }
+}
+
+
+const getInfoAboutUser = async (loggedUsername) => {
+    try {
+        const url = `${baseURL}/users/${loggedUsername}`;
+        const response = await axios.get(url);
+        return response.data;
+    } catch (err) {
+        console.log(err)
     }
 }

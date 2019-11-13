@@ -6,8 +6,6 @@ const baseURL = 'http://localhost:3131';
 let initialDOB = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const loggedUserTag = document.querySelector('#loggedUser');
-
     // BUTTON
     const logoutBtn = document.querySelector('#logoutBtn');
 
@@ -23,10 +21,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tableOfContents = document.querySelector('#tableOfContents');
 
     tableOfContents.addEventListener('click', (event) => {
-        if (event.target !== tableOfContents) {
+        if (event.target.nodeName === 'A') {
             sessionStorage.removeItem("targetUser");
         }
     })
+    
+    if (!loggedUsername) {
+        logoutBtn.innerText = 'Home';
+    }
     
     
     // INPUTS
@@ -61,11 +63,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     })
 
-
-    if (loggedUsername) {
+    const loggedUserTag = document.querySelector('#loggedUser');
+    if (!loggedUsername) {
+      logoutBtn.innerText = 'Home';
+      loggedUserTag.innerText = targetUser;
+    } else if (loggedUsername) {
         let userInfo = await getInfoAboutUser(loggedUsername, feedbackDiv, feedbackText);
         loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
-        
+
         fillOutForm(usernameInput, firstNameInput, lastNameInput, dobInput, userInfo)
     }
 
@@ -97,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 }) ///////////////////////////////////////////////
 
 
-const getInfoAboutUser = async (loggedUsername) => {
+const getInfoAboutUser = async (loggedUsername, feedbackDiv, feedbackText) => {
     try {
         const url = `${baseURL}/users/${loggedUsername}`;
         const response = await axios.get(url);

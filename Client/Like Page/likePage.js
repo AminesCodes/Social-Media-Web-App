@@ -7,7 +7,38 @@ let postNum = 0;
 let picNum = 0;
 let numOfLikesArray = [];
 
-document.addEventListener('DOMContentLoaded', () => {
+const baseURL = 'http://localhost:3131';
+
+document.addEventListener('DOMContentLoaded', async () => {   
+    // BUTTON
+    const logoutBtn = document.querySelector('#logoutBtn');
+
+    logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem("loggedUsername");
+        sessionStorage.removeItem("loggedPassword");
+        sessionStorage.removeItem("targetUser");
+
+        window.location.href = '../../index.html';
+    })
+
+    // TABLE OF CONTENT
+    const tableOfContents = document.querySelector('#tableOfContents');
+
+    tableOfContents.addEventListener('click', (event) => {
+        if (event.target.nodeName === 'A') {
+            sessionStorage.removeItem("targetUser");
+        }
+    })
+
+    const loggedUserTag = document.querySelector('#loggedUser');
+    if (!loggedUsername) {
+      logoutBtn.innerText = 'Home';
+      loggedUserTag.innerText = targetUser;
+    } else if (loggedUsername) {
+      let userInfo = await getInfoAboutUser(loggedUsername);
+          loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
+    }
+
     loadTargetUserLikedPostData();
     let feedForm = document.querySelector('#toggle');
     feedForm.addEventListener('click', (event) => {
@@ -25,20 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     })
 
-    // BUTTON
-    const logoutBtn = document.querySelector('#logoutBtn');
-    logoutBtn.addEventListener('click', () => {
-        sessionStorage.removeItem("loggedUsername");
-        sessionStorage.removeItem("loggedPassword");
-        sessionStorage.removeItem("targetUser");
-        window.location.href = '../../index.html';
-    })
-
-    if (!loggedUsername) {
-        logoutBtn.innerText = 'Home'
-        // document.querySelector('#album').style.display = 'none'
-    }
-    document.querySelector('#comments').style.visibility = 'hidden';
+    // document.querySelector('#comments').style.visibility = 'hidden';
 
     //event listener on the comments and likes div to post or delete like
     let cardContainer = document.querySelector('#dataContainer');
@@ -83,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         event.preventDefault();
-        if (event.target.id === 'previous') {
+        if (event.target.id === 'previous' && dataArr.length) {
             if (route === 'posts') {
                 postNum--;
                 if (postNum < 0) {
@@ -101,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('#comments').style.visibility = 'hidden';
 
         }
-        if (event.target.id === 'next') {
+        if (event.target.id === 'next' && dataArr.length) {
             if (route === 'posts') {
                 postNum++;
                 if (postNum > dataArr.length - 1) {
@@ -129,9 +147,10 @@ const loadTargetUserLikedPostData = async () => {
     const {
         data
     } = await axios.get(url);
-
     dataArr = data.body;
-    creatingCard('posts', dataArr[postNum])
+    if (dataArr.length) {
+        creatingCard('posts', dataArr[postNum])
+    }
 }
 const displayData = (route, num) => {
     clearScreen()
@@ -148,7 +167,9 @@ const loadTargetUserLikedPicsData = async () => {
     } = await axios.get(url);
 
     dataArr = data.body;
-    creatingCard('pictures', dataArr[picNum])
+    if (dataArr.length) {
+        creatingCard('pictures', dataArr[picNum])
+    }
 }
 
 //function to load the comments data
@@ -271,6 +292,7 @@ const getDataContainer = () => document.querySelector('#dataContainer')
 
 //This function create the cards on the create that will hold the axios information
 const creatingCard = async (route, el) => {
+    console.log(el)
     clearScreen();
     const dataContainer = getDataContainer()
     let likesCount;
@@ -358,3 +380,13 @@ const creatingCommentCard = (comEl) => {
 
 //this function creates elements
 const creatingElem = (elem) => document.createElement(`${elem}`);
+
+const getInfoAboutUser = async (loggedUsername) => {
+    try {
+        const url = `${baseURL}/users/${loggedUsername}`;
+        const response = await axios.get(url);
+        return response.data;
+    } catch (err) {
+        console.log(err)
+    }
+  }

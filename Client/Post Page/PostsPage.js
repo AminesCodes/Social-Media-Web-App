@@ -8,7 +8,27 @@ const baseURL = 'http://localhost:3131';
 const grab = (tag) => document.querySelector(`#${tag}`);
 
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // BUTTON
+    const logoutBtn = document.querySelector('#logoutBtn');
+
+    logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem("loggedUsername");
+        sessionStorage.removeItem("loggedPassword");
+        sessionStorage.removeItem("targetUser");
+
+        window.location.href = '../../index.html';
+    })
+
+    // TABLE OF CONTENT
+    const tableOfContents = document.querySelector('#tableOfContents');
+
+    tableOfContents.addEventListener('click', (event) => {
+        if (event.target.nodeName === 'A') {
+            sessionStorage.removeItem("targetUser");
+        }
+    })
+
     // HEADERS
     const h1Header = grab('username');
     const h3Header = document.querySelector('h3');
@@ -33,6 +53,16 @@ document.addEventListener('DOMContentLoaded', () => {
     h3Header.style.display = 'none';
 
 
+    const loggedUserTag = document.querySelector('#loggedUser');
+    if (!loggedUsername) {
+      logoutBtn.innerText = 'Home';
+      loggedUserTag.innerText = targetUser;
+    } else if (loggedUsername) {
+      let userInfo = await getInfoAboutUser(loggedUsername, feedbackDiv, feedbackText);
+          loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
+    }
+
+    
     // FEEDBACK DIV CLOSE BUTTON
     const closeBtn = document.querySelector('#closeBtn');
 
@@ -55,29 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetUser) {
         h1Header.innerText = targetUser + ' Posts';
     }
-
-    // LOGOUT BUTTON
-    const logoutBtn = document.querySelector('#logoutBtn');
-
-    // CLICK ON THE LOGOUT BUTTON WILL ERASE THE SESSION INFORMATION AND REDIRECT TO HOME
-    logoutBtn.addEventListener('click', () => {
-        sessionStorage.removeItem("loggedUsername");
-        sessionStorage.removeItem("loggedPassword");
-        sessionStorage.removeItem("targetUser");
-
-        window.location.href = '../../index.html';
-    })
-
-
-    // TABLE OF CONTENT DIV
-    const tableOfContents = document.querySelector('#tableOfContents');
-    
-    // CLICK ON ANY LINK ON THE TABLE OF CONTENT WILL ERASE THE TARGET USER
-    tableOfContents.addEventListener('click', (event) => {
-        if (event.target.nodeName === 'A') {
-            sessionStorage.removeItem("targetUser");
-        }
-    })
 
 
     if (targetUser) {
@@ -270,6 +277,21 @@ const addPostRequest = async (text, container) => {
         await loadAllPostsOfUser(loggedUsername, container, feedbackDiv, feedbackText)
     } catch (err) {
         console.log(err)
+        feedbackDiv.style.display = 'block';
+        if (err.response.data.message) {
+            feedbackText.innerText = err.response.data.message;
+        } else {
+            feedbackText.innerText = err;
+        }
+    }
+}
+
+const getInfoAboutUser = async (loggedUsername, feedbackDiv, feedbackText) => {
+    try {
+        const url = `${baseURL}/users/${loggedUsername}`;
+        const response = await axios.get(url);
+        return response.data;
+    } catch (err) {
         feedbackDiv.style.display = 'block';
         if (err.response.data.message) {
             feedbackText.innerText = err.response.data.message;
