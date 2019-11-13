@@ -191,7 +191,6 @@ const checkValidAuthenticationBody = (request, response, next) => {
 // AUTHENTICATION
 const authenticateUser = (request, response, next) => {
     if (request.userExists) {
-        // console.log(request.targetUser, request.loggedUsername, request.loggedPassword)
         if (request.targetUser.username === request.loggedUsername 
             && request.targetUser.user_password === request.loggedPassword) {
                 request.secureTargetUser = {
@@ -240,7 +239,6 @@ const checkValidRoute = (request, response, next) => {
   
 // 
 const checkPatchBody = (request, response, next) => {
-    console.log("line 232", request.body)
     if (!request.body.username 
         && !request.body.firstname 
         && !request.body.lastname 
@@ -268,8 +266,6 @@ const checkPatchBody = (request, response, next) => {
 
 // UPDATE USER
 const updateUser = async (request, response, next) => {
-    console.log('\nUPDATE USER MIDDLEWARE (line 260)', request.secureTargetUser);
-    console.log(request.body)
     if (request.body.password) {
         try {
             let updateQuery = `UPDATE users 
