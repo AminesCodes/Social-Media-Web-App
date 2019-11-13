@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-​
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+​<head>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="./commentPage.css">
-    <script src="./commentsPage.js"></script>
+    <script src="commentsPage.js"></script>
+    <link rel="stylesheet" href="commentPage.css">
     <title>User Comments Page</title>
 </head>
-​
-
-<body>
-    <!-- <div class="main-container"> -->
+​<body>
+    <h1>Comments</h1>
+    <div class="main-container">
+        
         <div id="tableOfContents">
-            <h1>Comments</h1>
+            
+            <h2>Table Of Contents</h2>
+           
             <a href="placeholder" id="user-info">User Info</a>
             <br>
-            <a href="placeholder" id='user-info'>Albums</a>
+            <a href="placeholder" id='albums'>Albums</a>
             <br>
             <a href="placeholder" id="accounts">Accounts</a>
             <br>
@@ -27,29 +24,32 @@
             <br>
             <a href="placeholder" id='posts'>Posts</a>
             <br>
-            <a href="../../index.html">Home</a>
+            <a href="#">Comments</a>
             <br>
+
             <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
         </div>
-    ​
-    <h3>Feed</h3>
-    <div id="all-comments-container">
-        <button id="get-all-comments">Get All Comments By User</button>
-    </div>
-    <div id="add-div">
-        <form>
-            <textarea cols="70" rows="10" placeholder="Enter comment"></textarea>
-            <button id="submit" type="submit">Post Comments </button>
-        </form>
-     </div>
-     
-        <div id="feed">
-            <div id="postsContainer"></div>
+       
+        <!-- <div id="all-comments-container"></div> -->
+       
+            <form>
+                <div id="all-comments-container"></div>
+                <div id="add-div">
+                <textarea cols="70" rows="10" placeholder="Enter comment"></textarea>
+                <button id="submit" type="submit">Post Comments </button>
+                </div>
+                <div id="feed">
+                     <h3>Feed</h3>
+                     <button id="toggle">Posts</button>
+                     <div id="postsContainer"></div>
+                     <div id="picturesContainer"></div>
 
-            <div id="picturesContainer"></div>
-            
+                </div>
+            </form>
         </div>
-    <!-- </div> -->
+     
+      
+    </div>
 </body>
 ​
 

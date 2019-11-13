@@ -72,22 +72,36 @@ const authenticateUser = (request, response, next) => {
 // This route is to find all the comments made on posts and pictures.
 const getAllComments = async (req, res) => {
     try {
-        const requestQuery = `SELECT comments.id AS comment_id,
- owner_username, 
- album_id,
-  picture_link,
-   author_username,
-    picture_id,
-     comment,
-      body, 
-      poster_username,
-      post_id
-      FROM albums JOIN pictures ON albums.id = album_id 
-      FULL OUTER JOIN comments ON pictures.id = picture_id 
-      FULL OUTER JOIN posts ON post_id = posts.id 
-      WHERE comment IS NOT NULL 
-      ORDER BY post_id DESC, picture_id DESC
-`
+        // const requestQuery = `SELECT 
+        //     ARRAY_AGG(author_username) AS commenters,
+        //     post_id,
+        //     picture_id,
+        //     ARRAY_AGG(comment) AS all_comments,
+        //     body
+        //     FROM comments FULL OUTER JOIN posts ON post_id = posts.id
+        //     FULL OUTER JOIN pictures on picture_id = pictures.id
+        //     WHERE comments.id IS NOT NULL
+        //     GROUP BY post_id, picture_id, body
+        //     ORDER BY comment_date DESC
+        // `
+
+        const requestQuery = `
+            SELECT
+                author_username AS who_commented,
+                owner_username AS picture_owner,
+                poster_username AS post_owner,
+                post_id,
+                picture_id,
+                picture_link,
+                ARRAY_AGG(comment) AS all_comments,
+                ARRAY_AGG(comments.id) AS all_comments_ids,
+                body
+            FROM comments FULL OUTER JOIN posts ON post_id = posts.id
+            FULL OUTER JOIN pictures ON picture_id = pictures.id
+            FULL OUTER JOIN albums ON album_id = albums.id
+            WHERE comments.id IS NOT NULL
+            GROUP BY post_id, picture_id, body, author_username, owner_username, poster_username, picture_link
+        `
         let allComments = await db.any(requestQuery)
         res.json({
             body: allComments,
@@ -104,22 +118,39 @@ router.get('/', getAllComments)
 const getAllCommentsByUsername = async (req, res) => {
     const username = req.params.username;
     try {
-        const requestQuery = `SELECT comments.id AS comment_id,
- owner_username, 
- album_id,
-  picture_link,
-   author_username,
-    picture_id,
-     comment,
-      body, 
-      poster_username,
-      post_id 
-      FROM albums JOIN pictures ON albums.id = album_id 
-      FULL OUTER JOIN comments ON pictures.id = picture_id 
-      FULL OUTER JOIN posts ON post_id = posts.id 
-      WHERE author_username = $1 AND comment IS NOT NULL 
-      ORDER BY post_id DESC, picture_id DESC
-`
+//         const requestQuery = `SELECT comments.id AS comment_id,
+//  owner_username, 
+//  album_id,
+//   picture_link,
+//    author_username,
+//     picture_id,
+//      comment,
+//       body, 
+//       poster_username,
+//       post_id 
+//       FROM albums JOIN pictures ON albums.id = album_id 
+//       FULL OUTER JOIN comments ON pictures.id = picture_id 
+//       FULL OUTER JOIN posts ON post_id = posts.id 
+//       WHERE author_username = $1 AND comment IS NOT NULL 
+//       ORDER BY comment_date DESC
+// `
+        const requestQuery = `
+            SELECT
+                author_username AS who_commented,
+                owner_username AS picture_owner,
+                poster_username AS post_owner,
+                post_id,
+                picture_id,
+                picture_link,
+                ARRAY_AGG(comment) AS all_comments,
+                ARRAY_AGG(comments.id) AS all_comments_ids,
+                body
+            FROM comments FULL OUTER JOIN posts ON post_id = posts.id
+            FULL OUTER JOIN pictures ON picture_id = pictures.id
+            FULL OUTER JOIN albums ON album_id = albums.id
+            WHERE author_username = $1 AND comments.id IS NOT NULL
+            GROUP BY post_id, picture_id, body, author_username, owner_username, poster_username, picture_link
+        `
         let allComments = await db.any(requestQuery, username)
         res.json({
             body: allComments,
@@ -186,14 +217,19 @@ const addCommentsOnPosts = async (req, res) => {
         let insertQuery = `INSERT INTO comments
             (author_username, post_id, comment)
              VALUES($1, $2, $3)`
-        await db.any(insertQuery, [req.loggedUsername, postId, req.body.comment])
+        await db.none(insertQuery, [req.loggedUsername, postId, req.body.comment])
+        const data = {
+            poster_username: req.loggedUsername,
+            comment: request.body.comment
+        }
         res.json({
-            body: req.body,
+            body: data,
             status: 'success',
             message: 'POST request successfully arrived at comments/posts'
         })
 
     } catch (error) {
+        console.log(err)
         res.json({
             status: 'failed',
             message: 'Something went wrong'
@@ -213,17 +249,22 @@ const addCommentsOnPics = async (req, res) => {
         let insertQuery = `INSERT INTO comments
             (author_username, picture_id, comment)
              VALUES($1, $2, $3)`
-        await db.any(insertQuery, [req.loggedUsername, pictureId, req.body.comment])
+        await db.none(insertQuery, [req.loggedUsername, pictureId, req.body.comment])
+        const data = {
+            poster_username: req.loggedUsername,
+            comment: req.body.comment
+        }
         res.json({
-            body: req.body,
+            body: data,
             status: 'success',
             message: 'POST request successfully arrived at comments/pictures'
         })
 
     } catch (error) {
+        console.log(error)
         res.json({
             status: 'failed',
-            message: 'Something went wrong'
+            message: 'Something went wrong!!!'
         })
     }
 

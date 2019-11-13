@@ -1,20 +1,25 @@
 body {
+    height: 100vh;
+}
+
+.main-container {
     display: grid;
     grid-template-columns: 20% 80%;
+    height: 95vh;
     /* grid-template-columns: repeat(auto-fill, minmax(5fr, 5fr)); */
 }
 
-​ #tableOfContents {
+#tableOfContents {
     display: flex;
     flex-direction: column;
-    justify-content: left;
+    justify-content: space-evenly;
     gap: 20px;
-    /* align-items: left; */
+    align-items: center;
     border: 2px solid peru;
     padding: 20px;
 }
 
-​ a {
+a {
     display: flex;
     border: 2px solid black;
     padding: 20px;
@@ -22,23 +27,82 @@ body {
     justify-content: center;
 }
 
-​ #feed {
+#feed {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
 }
 
-/* ​ .likes {
+#picturecontainer > .picture {
+
+}
+
+.picture {
+    border: darkcyan 2px solid;
+}
+/* 
+.userName {
     display: flex;
     flex-direction: column;
     border: 1px solid salmon;
-    padding: 20px;
-    border-radius: 12%;
-} */
+    /* padding: 20px; */
+    /* height: 10vh;
+    align-items: center;
 
-​ #postsContainer {
+} */ 
+
+/* #dataContainer {
     gap: 20px;
     display: flex;
     flex-direction: column;
+} */
+
+/* .likeContainer {
+    display: flex;
+    justify-content: space-between;
+    border: 1px black;
+    /* gap: 5px; */
+
+/* } */ 
+
+/* .likeContainer div {
+    border: 1px solid burlywood;
+    width: 50%;
+    padding: 10px;
+} */
+/* 
+.postBody {
+    border: 1px solid black;
+    padding: 40px;
+    align-items: center;
+} */
+
+img {
+    width: 100%;
+    border: 2px solid orange
 }
+
+.picture >div~img~ div{
+     border: pink solid 2px;
+    display: inline;
+    padding: 2px;
+}
+/* 
+.finalContainer {
+    border: 1px solid black;
+    border-radius: 2%;
+    width: 90%;
+    height: 30%
+} */
+
+/* #overFlow {
+    height: 95vh;
+    overflow: scroll;
+    text-align: center;
+    width: 55vw;
+} */
+
+
+
