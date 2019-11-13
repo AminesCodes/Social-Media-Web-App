@@ -15,13 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
      sessionStorage.removeItem("loggedUsername");
      sessionStorage.removeItem("loggedPassword");
      sessionStorage.removeItem("targetUser");
-     // console.log(sessionStorage)
      window.location.href = '../../index.html';
-     console.log(sessionStorage)
   })
   if (!loggedUsername) {
      logoutBtn.innerText = 'Home'
-  //   document.querySelector('#album').style.display = 'none'
+  //   document.querySelector('#album').style.display = 'none
   }
 })
 
@@ -38,7 +36,9 @@ const loadPage = () => {
       if (a.username === targetUser) {
         createCardAlbum(a)
         getCover(a.id)
+        // TO REVIEW (hard coded loggedUsername) =>
     } else if (a.username === 'aminescodes') {
+        // <= TO REVIEW (hard coded loggedUsername)
         if (document.getElementById('create') === null) {
           create.id = 'create'
           setAlbumForm()
@@ -81,7 +81,27 @@ const getCover = (id) => {
       cover.src = link
       let card = document.getElementById(id)
       card.appendChild(cover)
+      addDeleteBtn(id)
     })
+}
+
+// adds delete button to Album cards
+const addDeleteBtn = (id) => {
+  let delAlbumBtn = document.createElement('button')
+  delAlbumBtn.innerText = 'Delete Album'
+  delAlbumBtn.onclick = () => deleteAlbum(id)
+  let card = document.getElementById(id)
+  card.appendChild(delAlbumBtn)
+}
+
+// deletes Album
+const deleteAlbum = (id) => {
+  // TO REVIEW (hard coded user) =>
+  axios.put(`http://localhost:3131/albums/${id}/delete`, { loggedUsername: 'aminescodes', loggedPassword: '456'})
+  // <= TO REVIEW (hard coded user)
+  .then(response => {
+    location.reload()
+  })
 }
 
 // sets form for creating Albums
@@ -102,13 +122,15 @@ const setAlbumForm = () => {
 // creates Album
 const createAlbum = () => {
   let albumName = document.getElementById('albumName').value
+  // TO REVIEW (hard coded user) =>
   axios.post('http://localhost:3131/albums/', { albumName: albumName, loggedUsername: 'aminescodes', loggedPassword: '456' })
+  // <= TO REVIEW (hard coded user)
   .then(response => {
     location.reload()
   })
 }
 
-// Clicking Album cards and its consequences
+// to click on Album cards and its consequences
 const clickAlbum = (a) => {
   let list = document.getElementById('list')
   list.innerText = ''
@@ -119,9 +141,8 @@ const clickAlbum = (a) => {
   if (document.getElementById('create') !== null) {
     let create = document.getElementById('create')
     create.innerText = ''
-    setAddPictureForm()
+    setPictureForm()
   }
-  //createCardPic(a)
   showPictures(a.id)
 }
 
@@ -138,12 +159,10 @@ const createCardPic = async (el, img) => {
   let commentDiv = document.createElement('div')
   commentDiv.innerText = 'Comments';
   commentDiv.appendChild(comments)
-  //let img = document.querySelector('img');
-  //img.className = el.post_id;
+
   let likes = await getLikesPic(el.id)
   let times_liked = document.createElement('div');
   times_liked.innerText = `Liked: ${likes} times`;
-
 
   likeContainer.className = 'likeContainer';
   finalContainer.className = 'finalContainer';
@@ -151,13 +170,42 @@ const createCardPic = async (el, img) => {
   times_liked.className = 'timesLiked';
 
   img.src = el.picture_link;
+  img.id = el.id
+
+  let delPictureBtn = document.createElement('button')
+  delPictureBtn.innerText = 'Delete Picture'
+  delPictureBtn.onclick = () => delPicture()
 
   likeContainer.append(times_liked, commentDiv)
-  finalContainer.append(img, likeContainer)
+  finalContainer.append(img, likeContainer, delPictureBtn)
   list.append(finalContainer)
 }
 
-// sets prev and next Buttons and changes Picture when clicking them
+// get likes of a Picture (by ID)
+getLikesPic = async (id) => {
+  let likesResponse = await axios.get(`http://localhost:3131/likes/pictures/${id}`)
+  if (likesResponse.data.message === "Picture doesn't have likes") {
+    return 0
+  } else {
+    return likesResponse.data.body.length
+  }
+}
+
+// get comments of a Picture (by ID)
+getCommentsPic = async (id) => {
+  let comments = document.createElement('div')
+  let commentsResponse = await axios.get(`http://localhost:3131/comments/pictures/${id}`)
+  let body = commentsResponse.data.body
+  console.log(body)
+  body.forEach((el) => {
+    let p = document.createElement('p')
+    p.innerText = el.author_username + ': ' + el.comment
+    comments.appendChild(p)
+  })
+  return (comments)
+}
+
+// gets Pictures and sets prev and next Buttons, changes Picture when clicking on them
 const showPictures = async (id) => {
   let i = 0
   let go = 1
@@ -218,8 +266,20 @@ const grab = (i, go, response, img) => {
   }
 }
 
+// deletes Picture from current Album (by ID)
+const delPicture = () => {
+  let img = document.querySelector('img')
+  let pictureId = img.id
+  // TO REVIEW (hard coded user) =>
+  axios.put(`http://localhost:3131/pictures/delete/${pictureId}` , { loggedUsername: 'aminescodes', loggedPassword: '456' })
+  // <= TO REVIEW (hard coded user)
+  .then(response => {
+    location.reload()
+  })
+}
+
 // sets form for adding Picture to current Album
-const setAddPictureForm = () => {
+const setPictureForm = () => {
   let inputPictureLink = document.createElement('input')
   inputPictureLink.setAttribute('type', 'text')
   inputPictureLink.setAttribute('placeholder', 'Picture Link')
@@ -240,30 +300,10 @@ const addPicture = () => {
   let img = document.querySelector('img')
   let albumId = img.className
   let pictureLink = document.getElementById('pictureLink').value
+  // TO REVIEW (hard coded user) =>
   axios.post(`http://localhost:3131/pictures/albums/${albumId}`, { pictureLink: pictureLink, loggedUsername: 'aminescodes', loggedPassword: '456' })
+  // <= TO REVIEW (hard coded user)
   .then(response => {
     location.reload()
   })
-}
-
-getLikesPic = async (id) => {
-  let likesResponse = await axios.get(`http://localhost:3131/likes/pictures/${id}`)
-  if (likesResponse.data.message === "Picture doesn't have likes") {
-    return 0
-  } else {
-    return likesResponse.data.body.length
-  }
-}
-
-getCommentsPic = async (id) => {
-  let comments = document.createElement('div')
-  let commentsResponse = await axios.get(`http://localhost:3131/comments/pictures/${id}`)
-  let body = commentsResponse.data.body
-  console.log(body)
-  body.forEach((el) => {
-    let p = document.createElement('p')
-    p.innerText = el.author_username + ': ' + el.comment
-    comments.appendChild(p)
-  })
-  return (comments)
 }
