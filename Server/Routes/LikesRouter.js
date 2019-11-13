@@ -127,7 +127,7 @@ router.get('/posts/:post_id', getLikesByPostID, validatePostQuery, displayPostQu
 //use liker username
 router.get('/posts/interest/:liker_username', async (req, res) => {
     try {
-        let specPost = await db.any('SELECT liker_username,body,poster_username FROM likes JOIN posts ON post_id = posts.id WHERE liker_username = $1', [req.params.liker_username])
+        let specPost = await db.any('SELECT post_id,liker_username,body,poster_username FROM likes JOIN posts ON post_id = posts.id WHERE liker_username = $1', [req.params.liker_username])
         res.json({
             status: 'success',
             message: 'retrieved the likes',
@@ -375,7 +375,7 @@ router.get('/pictures/:picture_id', getLikesByPictureID, validatePicQuery, displ
 //router that gets the pictures that a user liked
 router.get('/pictures/interest/:liker_username', async (req, res) => {
     try {
-        let specPost = await db.any('SELECT liker_username,owner_username,picture_link FROM likes JOIN pictures ON picture_id = pictures.id JOIN albums ON album_id = albums.id WHERE liker_username = $1', [req.params.liker_username]);
+        let specPost = await db.any('SELECT picture_id,liker_username,owner_username,picture_link FROM likes JOIN pictures ON picture_id = pictures.id JOIN albums ON album_id = albums.id WHERE liker_username = $1', [req.params.liker_username]);
         res.json({
             status: 'success',
             message: 'retrieved all likes',
