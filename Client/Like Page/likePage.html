@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="./mainPage.css">
-    <script src="./mainPage.js"></script>
-    <title>User Main Page</title>
+    <link rel="stylesheet" href="./likePage.css">
+    <script src="./likePage.js"></script>
+    <title>User Likes Page</title>
 </head>
 
 <body>
-    <div id="bodyContainer">
+    <div id="container">
         <div id="tableOfContents">
             <h1>Account</h1>
             <a href="../User Info Page/userInfoPage.html">User Info</a>
@@ -23,19 +23,21 @@
             <a href="../Posts Page/postsPage.html">Posts</a>
             <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
         </div>
-        <form id="feedForm">
-            <div id="feed">
-                <div id="overFlow">
-                    <h2>Feed</h2>
-                    <button id="toggle">Toggle</button>
-                    <div id="clearScreen">
-                        <div id="dataContainer"></div>
-                    </div>
+        <div id="feed">
+            <h3>Feed</h3>
+            <div id="overFlow">
+                <button id="toggle" class="postsLoad">Toggle</button>
+                <div id="backAndForthButtons">
+                    <button id="previous">Previous</button>
+                    <button id="next">Next</button>
+                </div>
+                <div id="clearScreen">
+                    <div id="dataContainer"></div>
+                    <div id="comments"></div>
                 </div>
             </div>
+        </div>
     </div>
-    </form>
+
     </div>
 </body>
-
-</html>
