@@ -1,37 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-​
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+​<head>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="./commentPage.css">
-    <script src="./commentsPage.js"></script>
+    <script src="commentsPage.js"></script>
+    <link rel="stylesheet" href="commentPage.css">
     <title>User Comments Page</title>
 </head>
-​
+​<body>
+    <h1>Comments</h1>
+    <div class="main-container">
+        
+        <div id="tableOfContents">
+            <h2>Table Of Contents</h2>
+            <a id="album" href="../User Info Page/userInfoPage.html">User Info</a>
+            <a href="../User Info Page/userInfoPage.html">User Info</a>
+            <a href="../Main Page/mainPage.html">Home</a>
+            <a href="../Albums Page/albumsPage.html">Albums</a>
+            <a href="../Like Page/likePage.html">Likes</a>
+            <a href="../Posts Page/postsPage.html">Posts</a>
+            <a href="../Main Page/mainPage.html">Welcome</a>
+            <a href="#">Comments</a>
+            <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
+        </div>
+       
+        <div id="add-div">
+            <form>
+                <textarea cols="70" rows="10" placeholder="Enter comment"></textarea>
+                <button id="submit" type="submit">Post Comments </button>
+            </form>
+        </div>
 
-<body>
-    <div id="tableOfContents">
-        <h1 id="loggedUser">Account</h1><br>
-        <a href="../User Info Page/UserInfoPage.html">User Info</a><br>
-        <a href="../Main Page/mainPage.html">Welcome</a><br>
-        <a href="placeholder">Albums</a><br>
-        <a href="../Comment Page/commentsPage.html">Comments</a><br>
-        <a href="placeholder">Likes</a><br>
-        <a href="../Post Page/PostsPage.html">Posts</a><br>
-        <a href="../../index.html">Home</a><br>
-        <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
+        <div id="feed">
+            <h3>Feed</h3>
+            <button id="toggle">Posts</button>
+            <div id="postsContainer"></div>
+            <div id="picturesContainer"></div>
+        </div>
+            
     </div>
-    ​
-    <div id="feed">
-        <h3>Feed</h3>
-        <div id="postsContainer"></div>
-        <div id="picturesContainer"></div>
-    </div>
+
 </body>
 ​
-
 </html>

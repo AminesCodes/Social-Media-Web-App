@@ -1,0 +1,191 @@
+body {
+    height: 100vh;
+    background-color: rgb(230, 187, 187);
+}
+
+.main-container {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    height: 95vh;
+    /* grid-template-columns: repeat(auto-fill, minmax(5fr, 5fr)); */
+}
+
+#tableOfContents {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 20px;
+    align-items: center;
+    border: 2px solid peru;
+    padding: 20px;
+}
+
+a {
+    display: flex;
+    border: 2px solid black;
+    padding: 20px;
+    width: 10vw;
+    justify-content: center;
+}
+
+#feed {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+#picturecontainer >.post~div {
+    display: inline-block;
+     border: 1px solid black;
+     gap: 5px;
+     padding: 2px;
+     align-items: left;
+}
+
+.picture {
+    border: darkcyan 2px solid;
+    gap: 10px;
+}
+
+.picture~div>div {
+    display: inline-block;
+    border: 1px solid rgb(124, 136, 58);
+    gap: 10px;
+    padding: 10px;
+    width: 50%;
+    align-items: left;
+}
+
+.picture>.picture {
+    display: flex;
+    border: 1px solid black;
+    gap: 10px;
+    padding: 10px;
+    align-items: center;
+
+}
+
+#pictureContainer > .picture {
+    display: inline-block;
+    border: 1px solid black;
+    display:flex;
+    font-size: 20px;
+    padding: 40px;
+    gap: 20px;
+    align-items: center
+}
+
+.picture div{
+    display: inline-block;
+    /* border: 1px solid darkgoldenrod; */
+    gap: 10px;
+    padding: 5px;
+    align-items: center;
+}
+
+.picture~div {
+    /* display: flex; */
+    /* font-size: 20px;  */
+    /* border: 1px solid black; */
+    padding: 0px;
+    gap: 10px;
+    align-items: center;
+}
+ 
+.picture > div ~ div {
+    display: flex;
+    /* font-size: 20px;  */
+    /* border: 1px solid black; */
+    padding: 0px;
+    gap: 10px;
+    align-items: center;
+}
+.post {
+     display:inline-block;
+       border: 1px solid darkgoldenrod;
+       gap: 10px;
+       padding: 5px;
+       align-items: center;
+         /* overflow: hidden; */
+}
+
+.post > .post {
+       border: 1px solid black;
+       gap: 10px;
+       padding: 10px;
+       align-items: center;
+
+}
+
+ .post~div {
+    display:flex;
+    /* font-size: 20px;  */
+    /* border: 1px solid black; */
+    padding: 40px;
+    gap: 10px;
+    /* width: 50%; */
+    align-items: center;
+}  
+#postContainer>.post>div~div {
+     /* border: 1px solid black; */
+     display:flex;
+     font-size: 20px;
+     /* border: 1px solid black; */
+     padding: 10px;
+     gap: 20px;
+     align-items: center
+}
+
+/* .post~div>div {
+       border: 1px solid rgb(124, 136, 58);
+       gap: 5px;
+       padding: 40px;
+       align-items: left;
+} */
+
+img {
+    width: 100%;
+    border: 2px solid orange
+}
+
+/* .picture >div~img~div~div>div{
+     border: pink solid 2px;
+    display: inline;
+    padding: 2px;
+} */
+
+#postContainer>div~div {
+    border: 1px solid rgb(124, 136, 58);
+    gap: 10px;
+    padding: 10px;
+    align-items: left;
+}
+
+.post~div>div {
+    border: 1px solid rgb(124, 136, 58);
+    gap: 10px;
+    padding: 10px;
+    align-items: left;
+}
+#add-div {
+    margin: auto;
+}
+/* .picture>div~img~div {
+    border: pink solid 2px;
+    display: inline;
+    padding: 2px;
+} */
+
+/* img~div {
+    border:blueviolet solid 2px;
+    display: inline;
+    padding: 2px;
+} */
+/* 
+
+
+
+
+
