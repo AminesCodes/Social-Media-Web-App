@@ -10,9 +10,9 @@ let numOfLikesArray = [];
 document.addEventListener('DOMContentLoaded', () => {
     loadTargetUserLikedPostData();
     let feedForm = document.querySelector('#toggle');
-    console.log(feedForm)
+    // console.log(feedForm)
     feedForm.addEventListener('click', (event) => {
-        console.log('THIS ONE ', event.target.id)
+        // console.log('THIS ONE ', event.target.id)
         if (event.target.id === 'toggle' && feedForm.className === 'postsLoad') {
             // clearScreen()
             loadTargetUserLikedPicsData();
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.removeItem("targetUser");
         // console.log(sessionStorage)
         window.location.href = '../../index.html';
-        console.log(sessionStorage)
+        // console.log(sessionStorage)
     })
 
     if (!loggedUsername) {
@@ -48,14 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
     //event listener on the comments and likes div to post or delete like
     let cardContainer = document.querySelector('#dataContainer');
     cardContainer.addEventListener('click', async (event) => {
-        console.log('div ====', cardContainer)
-        console.log('here')
+        // console.log('div ====', cardContainer)
+        // console.log('here')
 
         if (event.target.className === 'postTimesLiked') {
             let container = event.target.parentNode.parentNode;
             let response = await likeAPost(container.id)
             creatingCard('posts', dataArr[num])
-            console.log(response.message);
+            // console.log(response.message);
             if (response.message === 'post already liked') {
                 await deletePostLike(container.id);
                 creatingCard('posts', dataArr[num])
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (event.target.className === 'picTimesLiked') {
             let container = event.target.parentNode.parentNode;
-            console.log(container);
+            // console.log(container);
             let response = await likeAPicture(container.id)
             creatingCard('pictures', dataArr[num])
             if (response.message === 'picture already liked') {
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.target.className === 'commentDiv') {
             document.querySelector('#comments').style.visibility = 'initial';
             let container = event.target.parentNode.parentNode;
-            console.log(container);
+            // console.log(container);
 
             loadCommentsData(container.id);
         }
@@ -143,14 +143,14 @@ const loadTargetUserLikedPostData = async () => {
     const {
         data
     } = await axios.get(url);
-    console.log(data);
+    // console.log(data);
 
     dataArr = data.body;
-    console.log('help', dataArr);
+    // console.log('help', dataArr);
     creatingCard('posts', dataArr[postNum])
 }
 const displayData = (route, num) => {
-    console.log('THIS IS NUM', num)
+    // console.log('THIS IS NUM', num)
     clearScreen()
     creatingCard(route, dataArr[num]) // TO REVIEW
 }
@@ -165,7 +165,7 @@ const loadTargetUserLikedPicsData = async () => {
     const {
         data
     } = await axios.get(url);
-    console.log(data);
+    // console.log(data);
 
     dataArr = data.body;
     creatingCard('pictures', dataArr[picNum])
@@ -180,7 +180,7 @@ const loadCommentsData = async (postId) => {
         const {
             data
         } = await axios.get(url)
-        console.log(data);
+        // console.log(data);
         data.body.forEach(elem => {
             creatingCommentCard(elem)
         });
@@ -192,20 +192,20 @@ const loadCommentsData = async (postId) => {
 
 //function to load the number of likes
 const loadNumOfLikes = async (endpoint, id) => {
-    console.log('called')
+    // console.log('called')
     url = `http://localhost:3131/likes/${endpoint}/${id}`
 
-    // try {
+    try {
     const {
         data
     } = await axios.get(url)
 
-    // } catch (error) {
-    //     console.log(error);
+    } catch (error) {
+        console.log(error);
 
-    // }
+    }
     numOfLikesArray = data.body;
-    console.log('bye', numOfLikesArray);
+    // console.log('bye', numOfLikesArray);
     return numOfLikesArray
 }
 
@@ -222,7 +222,7 @@ const likeAPost = async (postId) => {
         const {
             data
         } = await axios.post(url, loginInfo);
-        console.log('this is data', data)
+        // console.log('this is data', data)
         return data;
     } catch (err) {
         console.log(err)
@@ -251,7 +251,7 @@ const likeAPicture = async (postId) => {
 //this function deletes a like
 const deletePostLike = async (postId) => {
     url = `http://localhost:3131/likes/posts/${postId}/delete`
-    console.log('called')
+    // console.log('called')
     //user login information object
     let loginInfo = {
         loggedUsername: 'vonbar',
@@ -267,7 +267,7 @@ const deletePostLike = async (postId) => {
 //this function deletes a like
 const deletePicLike = async (picId) => {
     url = `http://localhost:3131/likes/pictures/${picId}/delete`
-    console.log('called')
+    // console.log('called')
     //user login information object
     let loginInfo = {
         loggedUsername: 'vonbar',
@@ -301,16 +301,16 @@ const getDataContainer = () => document.querySelector('#dataContainer')
 const creatingCard = async (route, el) => {
     clearScreen();
     const dataContainer = getDataContainer()
-    console.log('look here', el)
+    // console.log('look here', el)
     let likesCount;
-    console.log('postID', el.post_id);
+    // console.log('postID', el.post_id);
 
     if (el.post_id) {
         likesCount = await loadNumOfLikes(route, el.post_id)
     } else if (el.picture_id) {
         likesCount = await loadNumOfLikes(route, el.picture_id)
     }
-    console.log('likesCounted', likesCount.length);
+    // console.log('likesCounted', likesCount.length);
 
 
     //creating the elements that will hold the information on the pokemon
@@ -339,10 +339,10 @@ const creatingCard = async (route, el) => {
     if (el.body) {
         times_liked.className = 'postTimesLiked';
         finalContainer.id = el.post_id
-        console.log('hello', el.post_id);
+        // console.log('hello', el.post_id);
         username.innerText = `This post by: ${el.poster_username}`
         body.innerText = `Text: ${el.body}`
-        console.log('HERE !!!!!', likesCount.length)
+        // console.log('HERE !!!!!', likesCount.length)
         times_liked.innerText = `Liked: ${likesCount.length} times`;
         userContainer.append(username);
         likeContainer.append(commentDiv, times_liked);
