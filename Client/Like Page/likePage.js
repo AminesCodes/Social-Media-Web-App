@@ -16,12 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.target.id === 'toggle' && feedForm.className === 'postsLoad') {
             // clearScreen()
             loadTargetUserLikedPicsData();
+            clearComments()
             feedForm.className = 'picturesLoad'
         } else if (event.target.id === 'toggle' && feedForm.className === 'picturesLoad') {
             // num = 0;
             // clearScreen()
             loadTargetUserLikedPostData();
             feedForm.className = 'postsLoad'
+            clearComments()
         }
 
     })
