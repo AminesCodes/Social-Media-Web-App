@@ -191,7 +191,6 @@ router.get('/posts/:post_id', getCommentsById)
 const getPicsById = async (req, res) => {
 
     let pictureId = req.params.picture_id
-    console.log(pictureId)
     try {
         let commentsOnPics = await db.any(`SELECT author_username, owner_username, picture_link, comment FROM comments JOIN pictures ON picture_id = pictures.id JOIN albums ON album_id = albums.id WHERE pictures.id = $1`, pictureId)
         res.json({
@@ -334,7 +333,7 @@ const updateCommentsOnPics = async (req, res) => {
         let updateQuery = `UPDATE comments
                             SET comment = $1
                             WHERE id = $2`
-                        
+
         await db.any(updateQuery, [req.body.comment, req.targetComment.id])
         delete req.targetComment.comment;
         req.targetComment.comment = req.body.comment

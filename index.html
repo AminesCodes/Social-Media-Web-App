@@ -5,65 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="/Client/index.js"></script>
-    <link rel="stylesheet" href="/Client/index.css">
+    <script src="Client/index.js"></script>
+    <link rel="stylesheet" href="Client/index.css">
     <title>Social Media App</title>
 </head>
 <body>
-    <div id="tableOfContents">
-        <h1>Account</h1>
-        <a href="placeholder">User Info</a>
-        <a href="placeholder">Albums</a>
-        <a href="placeholder">Comments</a>
-        <a href="placeholder">Likes</a>
-        <a href="placeholder">Posts</a>
-        <a href="../../index.html">Home</a>
-        <button class='tableOfContentsBtn'>Log out</button>
-    </div>
 
     <div>
-
-        <div id="leftDiv">
-            <form id="searchBar">
-                <input id="searchInput" type="text" placeholder="Search keyword">
-            </form>
-        
-            <div id="description"> DESCRIPTION HERE</div>
-        
-            <div id="searchResult">
-                <ul></ul>
-            </div>
-        </div>
-    
-        <div id="rightDiv">
-            <form id="loginForm" class="login">
-                <label for="usernameInput">Username</label>
-                <input type="text" name="username" id="usernameInput">
-                <br>
-                <label for="passwordInput">Password</label>
-                <input type="password" name="pwd" id="passwordInput">
-                <br>
-                <label for="firstNameInput">First name</label>
-                <input type="text" name="firstname" id="firstNameInput">
-                <br>
-                <label for="lastNameInput">Last name</label>
-                <input type="text" name="lastname" id="lastNameInput">
-                <br>
-                <label for="dateOfBirthInput">Date of birth</label>
-                <input type="text" name="dob" id="dateOfBirthInput" placeholder="YYYY-MM-DD">
-                <br>
-                <button id="login">Login</button>
-            </form>
-        </div>
-    
-        <button id="signInBtn" class="signInBtn">Sign in</button>
-    
-        <div id="feedbackDiv">
-            <button id="closeBtn">X</button>
-            <p id="feedbackText"></p>
-        </div>
+        <h1> NAME OF APP </h1>
+        <form id="searchBar">
+            <input id="searchInput" type="text" placeholder="Search keyword">
+        </form>
     </div>
     
+    <div id="leftDiv">
+    
+        <div id="description"> DESCRIPTION HERE</div>
+    
+        <div id="searchResult">
+            <ul></ul>
+        </div>
+    </div>
+
+    <div id="rightDiv">
+        <form id="loginForm" class="login">
+            <label for="usernameInput">Username</label>
+            <input type="text" name="username" id="usernameInput">
+            <br>
+            <label for="passwordInput">Password</label>
+            <input type="password" name="pwd" id="passwordInput">
+            <br>
+            <label for="firstNameInput">First name</label>
+            <input type="text" name="firstname" id="firstNameInput">
+            <br>
+            <label for="lastNameInput">Last name</label>
+            <input type="text" name="lastname" id="lastNameInput">
+            <br>
+            <label for="dateOfBirthInput">Date of birth</label>
+            <input type="text" name="dob" id="dateOfBirthInput" placeholder="YYYY-MM-DD">
+            <br>
+            <button id="login">Login</button>
+        </form>
+
+        <button id="signInBtn" class="signInBtn">Sign in</button>
+    </div>
+
+    <div id="feedbackDiv">
+        <button id="closeBtn">X</button>
+        <p id="feedbackText"></p>
+    </div>
 
 </body>
 </html>
