@@ -12,24 +12,30 @@
 </head>
 
 <body>
-    <div id="tableOfContents">
-        <h1>Account</h1>
-        <a href="placeholder">User Info</a>
-        <a href="placeholder">Albums</a>
-        <a href="placeholder">Comments</a>
-        <a href="placeholder">Likes</a>
-        <a href="placeholder">Posts</a>
-        <button>Log out</button>
-    </div>
-
-    <form id="feedForm">
-        <button>Toggle</button>
-        <div id="feed">
-            <h3>Feed</h3>
-            <div id="postsContainer"></div>
-            <div id="picturesContainer"></div>
+    <div id="bodyContainer">
+        <div id="tableOfContents">
+            <h1>Account</h1>
+            <a href="../User Info Page/userInfoPage.html">User Info</a>
+            <a href="../Main Page/mainPage.html">Home</a>
+            <a href="../Albums Page/albumsPage.html">Albums</a>
+            <a href="../Comment Page/commentsPage.html">Comments</a>
+            <a href="../Main Page/mainPage.html">Welcome</a>
+            <a href="../Posts Page/postsPage.html">Posts</a>
+            <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
         </div>
+        <form id="feedForm">
+            <div id="feed">
+                <div id="overFlow">
+                    <h2>Feed</h2>
+                    <button id="toggle">Toggle</button>
+                    <div id="clearScreen">
+                        <div id="dataContainer"></div>
+                    </div>
+                </div>
+            </div>
+    </div>
     </form>
+    </div>
 </body>
 
 </html>

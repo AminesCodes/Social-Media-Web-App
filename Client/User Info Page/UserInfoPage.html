@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="UserInfoPage.js"></script>
+    <link rel="stylesheet" href="UserInfoPage.css">
+    <title>Social Media App</title>
+</head>
+<body>
+    <div id="tableOfContents">
+        <h1 id="loggedUser">Account</h1>
+        <a href="../User Info Page/UserInfoPage.html">User Info</a>
+        <a href="placeholder">Albums</a>
+        <a href="placeholder">Comments</a>
+        <a href="placeholder">Likes</a>
+        <a href="placeholder">Posts</a>
+        <a href="../../index.html">Home</a>
+        <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
+    </div>
+
+    <div id='restOfPage'>
+
+        <h1>EDIT YOUR INFORMATION</h1>
+        <hr>
+        <h3>To edit your information, click on any information</h3>
+        <form id="updateForm">
+            <!-- <label for="username"></label> -->
+            <input id="username" type="text">
+            <br>
+            <!-- <label for="password">/label> -->
+            <input id="password" type="password">
+            <br>
+            <!-- <label for="firstName"></label> -->
+            <input id="firstName" type="text">
+            <br>
+            <!-- <label for="lastName"></label> -->
+            <input id="lastName" type="text">
+            <br>
+            <!-- <label for="dateOfBirth"></label> -->
+            <input id="dateOfBirth" type="text">
+            <br>
+            <button id="editBtn">Save Changes</button>
+        </form>
+
+        <div id="feedbackDiv">
+            <button id="closeBtn">X</button>
+            <p id="feedbackText"></p>
+        </div>
+        
+    </div>
+    
+
+</body>
+</html>
