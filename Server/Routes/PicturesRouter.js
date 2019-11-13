@@ -10,8 +10,8 @@ const getPictureById = async (req, res) => {
     const requestQuery = `
       SELECT picture_link, picture_date, album_id, comment, comment_date, liker_username
       FROM pictures
-      JOIN comments ON (comments.picture_id = pictures.id)
-      JOIN likes ON (likes.picture_id = pictures.id)
+      FULL OUTER JOIN comments ON (comments.picture_id = pictures.id)
+      FULL OUTER JOIN likes ON (likes.picture_id = pictures.id)
       WHERE pictures.id = $1`
     const pic = await db.any(requestQuery, [req.params.pictureid])
     res.json({
@@ -32,10 +32,10 @@ const getPictureById = async (req, res) => {
 const getPicturesByAlbum = async (req, res) => {
   try {
     const requestQuery = `
-      SELECT picture_link, picture_date, album_id, comment, comment_date, liker_username
+      SELECT pictures.id, picture_link, picture_date, album_id, comment, comment_date, liker_username
       FROM pictures
-      JOIN comments ON (comments.picture_id = pictures.id)
-      JOIN likes ON (likes.picture_id = pictures.id)
+      FULL OUTER JOIN comments ON (comments.picture_id = pictures.id)
+      FULL OUTER JOIN likes ON (likes.picture_id = pictures.id)
       WHERE album_id = $1`
     const picsFromAlbum = await db.any(requestQuery, [req.params.albumid])
     res.json({
