@@ -40,15 +40,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // UL
     const ulTag = document.querySelector('ul');
 
-    feedbackDiv.addEventListener('click', (event) => {
+    // FEEDBACK DIV CLOSE BUTTON
+    const closeBtn = document.querySelector('#closeBtn');
 
-        if (event.target.parentNode === feedbackDiv && event.target.innerText === 'X') {
-            feedbackDiv.style.display = 'none';
-        }
+    closeBtn.addEventListener('click', (event) => {
+        feedbackDiv.style.display = 'none';
+        feedbackText.innerText = '';
     })
     document.addEventListener('keydown', (event) => {
         if (event.code === "Escape") {
             feedbackDiv.style.display = 'none';
+            feedbackText.innerText = '';
         }
     })
 

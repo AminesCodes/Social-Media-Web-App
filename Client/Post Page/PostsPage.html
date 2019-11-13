@@ -1,37 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="./mainPage.css">
-    <script src="./mainPage.js"></script>
-    <title>User Main Page</title>
+    <script src="PostsPage.js"></script>
+    <link rel="stylesheet" href="PostsPage.css">
+    <title>Social Media App</title>
 </head>
-
 <body>
+    <div id="container">
     <div id="tableOfContents">
-        <h1 id="loggedUser">Account</h1><br>
+        <h1 id="loggedUser"></h1><br>
         <a href="../User Info Page/UserInfoPage.html">User Info</a><br>
         <a href="../Main Page/mainPage.html">Welcome</a><br>
         <a href="placeholder">Albums</a><br>
         <a href="../Comment Page/commentsPage.html">Comments</a><br>
         <a href="placeholder">Likes</a><br>
-        <a href="../Post Page/PostsPage.html">Posts</a><br>
-        <a href="../../index.html">Home</a><br>
+        <a href="#">Posts</a><br>
         <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
     </div>
 
-    <form id="feedForm">
-        <button>Toggle</button>
-        <div id="feed">
-            <h3>Feed</h3>
-            <div id="postsContainer"></div>
-            <div id="picturesContainer"></div>
-        </div>
-    </form>
-</body>
+    <div id='feed'>
 
+        <h1 id='username'></h1>
+        <hr>
+        <h3>Share something</h3>
+        <form> 
+            <textarea name="newPostBody" id="newPostInput" cols="70" rows="10"></textarea>
+            <button>Post</button>
+        </form>
+
+        <div id="allPostsDiv">
+
+        </div>
+
+        <div id="feedbackDiv">
+            <button id="closeBtn">X</button>
+            <p id="feedbackText"></p>
+        </div>
+        
+    </div>
+    </div>
+    
+
+</body>
 </html>
