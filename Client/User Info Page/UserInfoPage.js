@@ -19,6 +19,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         window.location.href = '../../index.html';
     })
+
+    // TABLE OF CONTENT
+    const tableOfContents = document.querySelector('#tableOfContents');
+
+    tableOfContents.addEventListener('click', (event) => {
+        if (event.target !== tableOfContents) {
+            sessionStorage.removeItem("targetUser");
+        }
+    })
     
     
     // INPUTS
@@ -39,15 +48,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     // FEEDBACK TEXT
     const feedbackText = document.querySelector('#feedbackText');
 
-    feedbackDiv.addEventListener('click', (event) => {
+    // FEEDBACK DIV CLOSE BUTTON
+    const closeBtn = document.querySelector('#closeBtn');
 
-        if (event.target.parentNode === feedbackDiv && event.target.innerText === 'X') {
-            feedbackDiv.style.display = 'none';
-        }
+    closeBtn.addEventListener('click', (event) => {
+        feedbackDiv.style.display = 'none';
+        feedbackText.innerText = '';
     })
     document.addEventListener('keydown', (event) => {
         if (event.code === "Escape") {
             feedbackDiv.style.display = 'none';
+            feedbackText.innerText = '';
         }
     })
 

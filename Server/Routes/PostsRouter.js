@@ -8,13 +8,15 @@ const {db} = require('../../Database/database'); //connected db instance
 const getAllPosts = async (request, response, next) => {
     try {
         const requestQuery = `
-        SELECT username, 
-                firstname,
-                lastname, 
-                id,
-                body,
-                TO_CHAR(posting_date, 'dd/mm/yyyy') AS posting_date
-            FROM users JOIN posts ON username = poster_username`;
+        SELECT posts.id AS post_id, 
+            poster_username,
+            body,
+            TO_CHAR(posts.posting_date, 'dd/mm/yyyy') AS posting_date,
+            COUNT(likes.id) AS total_likes
+            FROM posts FULL OUTER JOIN likes ON posts.id = likes.post_id
+            GROUP BY (posts.id) 
+            ORDER BY posts.id DESC
+        `;
         let allPosts = await db.any(requestQuery);
         response.json({
             status: 'success',
@@ -60,14 +62,16 @@ const routerTheEndpoint = (request, response) => {
 const getPostById = async (request, response) => {
     try {
         const requestQuery = `
-            SELECT username, 
-                firstname,
-                lastname, 
-                id,
+        SELECT posts.id AS post_id, 
+                poster_username,
                 body,
-                TO_CHAR(posting_date, 'dd/mm/yyyy') AS posting_date
-            FROM users JOIN posts ON username = poster_username
-            WHERE id = $1`;
+                TO_CHAR(posts.posting_date, 'dd/mm/yyyy') AS posting_date,
+                COUNT(likes.id) AS total_likes
+            FROM posts FULL OUTER JOIN likes ON posts.id = likes.post_id
+            WHERE posts.id = $1
+            GROUP BY (posts.id)
+            ORDER BY posts.id DESC
+        `;
         const post = await db.one(requestQuery, [request.postID]);
         response.json({
             status: 'success',
@@ -88,14 +92,16 @@ const getPostById = async (request, response) => {
 const getAllPostsByUsername = async (request, response) => {
     try {
         const requestQuery = `
-            SELECT username, 
-                firstname,
-                lastname, 
-                id,
-                body,
-                TO_CHAR(posting_date, 'dd/mm/yyyy') AS posting_date
-            FROM users JOIN posts ON username = poster_username
-            WHERE username = $1`;
+                SELECT posts.id AS post_id, 
+                    poster_username,
+                    body,
+                    TO_CHAR(posts.posting_date, 'dd/mm/yyyy') AS posting_date,
+                    COUNT(likes.id) AS total_likes
+                FROM posts FULL OUTER JOIN likes ON posts.id = likes.post_id
+                WHERE poster_username = $1
+                GROUP BY (posts.id) 
+                ORDER BY posts.id DESC
+            `;
         const userPosts = await db.any(requestQuery, [request.posterUsername]);
         if (userPosts.length) {
             response.json({
@@ -209,7 +215,7 @@ const addPost = async (request, response, next) => {
     try {
         let insertQuery = `INSERT INTO posts (poster_username, body) 
         VALUES($1, $2)`
-        await db.none(insertQuery, [request.targetUser.username, request.postBody]);
+        await db.none(insertQuery, [request.loggedUsername, request.postBody]);
         next();
     } catch (err) {
         console.log(err);
@@ -224,9 +230,17 @@ const addPost = async (request, response, next) => {
 
 const getTheAddedPost = async (request, response) => {
     try {
-        const requestQuery = `SELECT * FROM posts 
-        WHERE poster_username = $1 AND body = $2`;
-        let addedPosts = await db.any(requestQuery, [request.targetUser.username, request.postBody])
+        const requestQuery = `
+        SELECT posts.id AS post_id, 
+                poster_username,
+                body,
+                TO_CHAR(posts.posting_date, 'dd/mm/yyyy') AS posting_date,
+                COUNT(likes.id) AS total_likes
+            FROM posts FULL OUTER JOIN likes ON posts.id = likes.post_id
+            WHERE poster_username = $1 AND body = $2
+            GROUP BY (posts.id) 
+            LIMIT 1`;
+        let addedPosts = await db.one(requestQuery, [request.targetUser.username, request.postBody])
         response.json({
             status: 'success',
             message: 'Added a new post',

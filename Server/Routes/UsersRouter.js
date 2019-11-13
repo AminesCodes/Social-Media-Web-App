@@ -56,11 +56,11 @@ const checkValidBody = (request, response, next) => {
     const dob = request.body.dob;
     const password = request.body.password;
   
-    if (!username || !firstName || !lastName || !dob || !password) {
+    if (!username || !firstName || !lastName || !dob || !password || !isNaN(parseInt(username))) {
         response.status(400); // BAD REQUEST
         response.json({
             status: 'failed',
-            message: 'Missing information'
+            message: 'Missing information OR invalid form of input'
         });
     } else {
         // Implements the body data to the request:
