@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!loggedUsername) {
         logoutBtn.innerText = 'Home'
-        document.querySelector('#album').style.display = 'none'
+        // document.querySelector('#album').style.display = 'none'
     }
 
     //event listener on the comments and likes div to post or delete like
@@ -62,10 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (event.target.className === 'commentDiv') {
             let container = event.target.parentNode.parentNode;
-            console.log('hello');
-            window.location.href = '../Comment Page/commentsPage.html';
-            sessionStorage.setItem('post_id', `${container.id}`);
-            console.log(sessionStorage.getItem('post_id'));
+            console.log(container);
+            // window.location.href = '../Comment Page/commentsPage.html';
+            // sessionStorage.setItem('post_id', `${container.id}`);
+            // console.log(sessionStorage.getItem('post_id'));
+            loadCommentsData(container.id)
 
         }
     })
@@ -96,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadTargetUserLikedPostData = async () => {
+    //to review
     targetUser = 'jenama'
     url = `http://localhost:3131/likes/posts/interest/${targetUser}`
     const {
@@ -117,6 +119,7 @@ const displayData = () => {
 const loadTargetUserLikedPicsData = async () => {
     console.log(num);
 
+    //to review
     targetUser = 'vonbar'
     url = `http://localhost:3131/likes/pictures/interest/${targetUser}`
     const {
@@ -128,10 +131,17 @@ const loadTargetUserLikedPicsData = async () => {
     creatingCard(dataArr[num])
 }
 
-// const displayPicsData = () => {
-//     clearScreen()
-//     creatingCard(data.body[num])
-// }
+const loadCommentsData = async (postId) => {
+    clearScreen()
+    url = `http://localhost:3131/comments/posts/${postId}`
+
+    const {
+        data
+    } = await axios.get(url)
+    console.log(data);
+
+    // creatingCard(data.body[num])
+}
 
 //this function is to like a users post
 const likeAPost = async (postId) => {
