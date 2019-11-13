@@ -84,3 +84,8 @@ img {
     text-align: center;
     width: 55vw;
 }
+
+#backAndForthButtons {
+    display: flex;
+    gap: 580px;
+}

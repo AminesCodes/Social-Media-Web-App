@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTargetUserLikedPicsData();
             toggle = 'pictures'
         } else if (toggle === 'pictures') {
+            // num = 0;
             clearScreen()
             loadTargetUserLikedPostData();
             toggle = 'posts'
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //event listener on the comments and likes div to post or delete like
     let cardContainer = document.querySelector('#dataContainer');
     cardContainer.addEventListener('click', async (event) => {
+        event.preventDefault()
         if (event.target.className === 'postTimesLiked') {
             let container = event.target.parentNode.parentNode;
             let response = await likeAPost(container.id)
@@ -67,11 +69,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
     })
+
+    //event listener on the previous and next button
+    let backAndForth = document.querySelector('#backAndForth');
+    backAndForth.addEventListener('click', async (event) => {
+        console.log('fired');
+        event.preventDefault();
+        if (event.target.id === 'previous') {
+            if (num <= 0) {
+                num = dataArr.length;
+            }
+            num--;
+            displayData()
+        }
+        if (event.target.id === 'next') {
+            num++;
+            console.log(num);
+            if (num >= dataArr.length) {
+                num = 0;
+            }
+            displayData()
+        }
+    })
 })
 
-const add = () => {
-
-}
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadTargetUserLikedPostData = async () => {
@@ -82,14 +103,20 @@ const loadTargetUserLikedPostData = async () => {
     } = await axios.get(url);
     console.log(data);
 
-    data.body.forEach(el => {
-        dataArr.push(el)
-    });
-    creatingCardPost(dataArr[num])
+    dataArr = data.body;
+    console.log('help', dataArr);
+    creatingCard(dataArr[num])
+}
+const displayData = () => {
+    clearScreen()
+
+    creatingCard(dataArr[num])
 }
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadTargetUserLikedPicsData = async () => {
+    console.log(num);
+
     targetUser = 'vonbar'
     url = `http://localhost:3131/likes/pictures/interest/${targetUser}`
     const {
@@ -97,21 +124,14 @@ const loadTargetUserLikedPicsData = async () => {
     } = await axios.get(url);
     console.log(data);
 
-    //this event listener allows the user to move back and forth between the posts and pictures they liked
-    let prevForward = document.querySelector('#next');
-    prevForward.addEventListener('click', async (event) => {
-        event.preventDefault()
-        console.log('gired');
-
-        // if (event.target.id === 'previous') {
-        //     num--;
-        // }
-        // if (event.target.id === 'next') {
-        num++
-        // }
-    })
-    creatingCardPost(data.body[num])
+    dataArr = data.body;
+    creatingCard(dataArr[num])
 }
+
+// const displayPicsData = () => {
+//     clearScreen()
+//     creatingCard(data.body[num])
+// }
 
 //this function is to like a users post
 const likeAPost = async (postId) => {
@@ -197,7 +217,7 @@ const clearScreen = async () => {
 const getDataContainer = () => document.querySelector('#dataContainer')
 
 //This function create the cards on the create that will hold the axios information
-const creatingCardPost = async (el) => {
+const creatingCard = (el) => {
     const dataContainer = getDataContainer()
 
     //creating the elements that will hold the information on the pokemon
