@@ -314,7 +314,6 @@ const pictureChangePermission = async (req, res, next) => {
     try {
         let pictureId = req.params.picture_id
         let commentId = req.params.comment_id
-        console.log(pictureId, commentId)
         const requestQuery = `SELECT * FROM comments WHERE picture_id = $1 AND id = $2 AND author_username = $3`
         const targetComment = await db.one(requestQuery, [pictureId, commentId, req.loggedUsername])
         req.targetComment = targetComment;
@@ -355,7 +354,6 @@ router.patch('/pictures/:picture_id/:comment_id', checkValidAuthenticationBody, 
 // route to delete a comment from a post
 const deleteCommentOnPosts = async (req, res) => {
     let commentID = req.targetComment.id
-    console.log(req.targetComment)
     let deleteQuery = `DELETE FROM comments WHERE id = $1`
     try {
         await db.none(deleteQuery, commentID)

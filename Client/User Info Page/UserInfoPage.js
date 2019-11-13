@@ -1,7 +1,6 @@
 let loggedUsername = sessionStorage.getItem('loggedUsername');
 let loggedPassword = sessionStorage.getItem('loggedPassword');
 let targetUser = sessionStorage.getItem('targetUser');
-console.log(loggedUsername, loggedPassword, targetUser)
 
 const baseURL = 'http://localhost:3131';
 let initialDOB = false;

@@ -3,8 +3,6 @@ let loggedPassword = sessionStorage.getItem('loggedPassword');
 let targetUser = sessionStorage.getItem('targetUser');
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM Content Loaded')
-
   let container = document.getElementById('container')
 
   loadPage()
@@ -36,9 +34,7 @@ const loadPage = () => {
       if (a.username === targetUser) {
         createCardAlbum(a)
         getCover(a.id)
-        // TO REVIEW (hard coded loggedUsername) =>
-    } else if (a.username === 'aminescodes') {
-        // <= TO REVIEW (hard coded loggedUsername)
+    } else if (a.username === loggedUsername) {
         if (document.getElementById('create') === null) {
           create.id = 'create'
           setAlbumForm()
@@ -96,9 +92,7 @@ const addDeleteBtn = (id) => {
 
 // deletes Album
 const deleteAlbum = (id) => {
-  // TO REVIEW (hard coded user) =>
-  axios.put(`http://localhost:3131/albums/${id}/delete`, { loggedUsername: 'aminescodes', loggedPassword: '456'})
-  // <= TO REVIEW (hard coded user)
+  axios.put(`http://localhost:3131/albums/${id}/delete`, { loggedUsername: loggedUsername, loggedPassword: loggedPassword})
   .then(response => {
     location.reload()
   })
@@ -122,9 +116,7 @@ const setAlbumForm = () => {
 // creates Album
 const createAlbum = () => {
   let albumName = document.getElementById('albumName').value
-  // TO REVIEW (hard coded user) =>
-  axios.post('http://localhost:3131/albums/', { albumName: albumName, loggedUsername: 'aminescodes', loggedPassword: '456' })
-  // <= TO REVIEW (hard coded user)
+  axios.post('http://localhost:3131/albums/', { albumName: albumName, loggedUsername: loggedUsername, loggedPassword: loggedPassword })
   .then(response => {
     location.reload()
   })
@@ -196,7 +188,6 @@ getCommentsPic = async (id) => {
   let comments = document.createElement('div')
   let commentsResponse = await axios.get(`http://localhost:3131/comments/pictures/${id}`)
   let body = commentsResponse.data.body
-  console.log(body)
   body.forEach((el) => {
     let p = document.createElement('p')
     p.innerText = el.author_username + ': ' + el.comment
@@ -270,9 +261,7 @@ const grab = (i, go, response, img) => {
 const delPicture = () => {
   let img = document.querySelector('img')
   let pictureId = img.id
-  // TO REVIEW (hard coded user) =>
-  axios.put(`http://localhost:3131/pictures/delete/${pictureId}` , { loggedUsername: 'aminescodes', loggedPassword: '456' })
-  // <= TO REVIEW (hard coded user)
+  axios.put(`http://localhost:3131/pictures/delete/${pictureId}` , { loggedUsername: loggedUsername, loggedPassword: loggedPassword })
   .then(response => {
     location.reload()
   })
@@ -300,9 +289,7 @@ const addPicture = () => {
   let img = document.querySelector('img')
   let albumId = img.className
   let pictureLink = document.getElementById('pictureLink').value
-  // TO REVIEW (hard coded user) =>
-  axios.post(`http://localhost:3131/pictures/albums/${albumId}`, { pictureLink: pictureLink, loggedUsername: 'aminescodes', loggedPassword: '456' })
-  // <= TO REVIEW (hard coded user)
+  axios.post(`http://localhost:3131/pictures/albums/${albumId}`, { pictureLink: pictureLink, loggedUsername: loggedUsername, loggedPassword: loggedPassword })
   .then(response => {
     location.reload()
   })

@@ -101,7 +101,6 @@ const getLikesByPostID = async (req, res, next) => {
 //this function takes in the promise and checks if it contains data
 const validatePostQuery = (req, res, next) => {
     let body = req.postLikes
-    // console.log(body);
     if (body.length === 0) {
         res.status(404);
         res.json({

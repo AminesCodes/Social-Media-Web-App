@@ -24,8 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let addDiv = document.querySelector('#add-div')
 
     let tableOfContentDiv = document.querySelector('#tableOfcontent')
-    // to review
-    getAllComments('jenama')
+    
+    if (targetUser) {
+        getAllComments(targetUser)
+    } else {
+        getAllComments(loggedUsername)
+    }
     // get all comments button eventlistener
 
     let newComment = document.querySelector('textarea')
@@ -77,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (event.target.parentNode.parentNode.className === 'post' && event.target.innerText !== 'X') {
-             console.log('here')
             form.id = `updateCommentOnPost`
             let postID = event.target.parentNode.parentNode.firstChild.id
             // let text = event.target
@@ -130,8 +133,6 @@ const getAllComments = async (username) => {
 ////////////////////////////////////////////
 // function to display all the comments
 const displayAllComments = (comments) => {
-    console.log('ALL comments', comments)
-
     let posts = document.querySelector('#postsContainer') // this divs holds comments on posts
     let pictures = document.querySelector('#picturesContainer') // holds comments on pictures
     posts.innerText = ''
@@ -197,19 +198,17 @@ const displayAllComments = (comments) => {
 //////////////////////////////////////////////////////////
 
 const addComment = async (route, targetId, text) => {
-    console.log('post id', targetId)
     let baseUrl1 = `http://localhost:3131/comments/${route}/${targetId}`
 
     let loginInfo = {
-        loggedUsername: 'jenama',
-        loggedPassword: '234',
+        loggedUsername: loggedUsername,
+        loggedPassword: loggedPassword,
         comment: text
     };
 
     try {
         let data = await axios.post(baseUrl1, loginInfo)
-        console.log('data', data.data)
-        getAllComments('jenama')
+        getAllComments(loggedUsername)
 
     } catch (error) {
         console.log('Bad Request')
@@ -217,34 +216,31 @@ const addComment = async (route, targetId, text) => {
 }
 
 const updateComments = async (route, targetId, text) => {
-    console.log('target id', targetId)
     let body = JSON.parse(targetId)
 
 
-    body.loggedUsername = 'jenama'
-    body.loggedPassword = '234'
+    body.loggedUsername = loggedUsername
+    body.loggedPassword = loggedPassword
     body.comment = text
     let baseUrl1 = `http://localhost:3131/comments/${route}/${body.target_id}/${body.comment_id}`
     try {
         let data = await axios.patch(baseUrl1, body)
-        // console.log('data', data.data)
-        getAllComments('jenama')
+        getAllComments(loggedUsername)
 
     } catch (error) {
-        console.log('Bad Request!!!!')
+        console.log('Bad Request')
     }
 
 }
 
 const deleteComment = async (route, targetId) => {
     let body = JSON.parse(targetId)
-    body.loggedUsername = 'jenama'
-    body.loggedPassword = '234'
+    body.loggedUsername = loggedUsername
+    body.loggedPassword = loggedPassword
     let baseUrl1 = `http://localhost:3131/comments/${route}/${body.target_id}/${body.comment_id}/delete`
     try {
         let data = await axios.put(baseUrl1, body)
-        console.log('data', data.data)
-        getAllComments('jenama')
+        getAllComments(loggedUsername)
 
     } catch (error) {
         console.log('Bad Request')

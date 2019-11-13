@@ -29,9 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.removeItem("loggedUsername");
         sessionStorage.removeItem("loggedPassword");
         sessionStorage.removeItem("targetUser");
-        // console.log(sessionStorage)
         window.location.href = '../../index.html';
-        console.log(sessionStorage)
     })
 
     if (!loggedUsername) {
@@ -45,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.target.className === 'postTimesLiked') {
             let container = event.target.parentNode.parentNode;
             let response = await likeAPost(container.id)
-            console.log(response.message);
             if (response.message === 'post already liked') {
                 await deletePostLike(container.id);
             }
@@ -53,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (event.target.className === 'picTimesLiked') {
             let container = event.target.parentNode.parentNode;
-            console.log(container);
             let response = await likeAPicture(container.id)
             if (response.message === 'picture already liked') {
                 await deletePicLike(container.id);
@@ -62,10 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (event.target.className === 'commentDiv') {
             let container = event.target.parentNode.parentNode;
-            console.log('hello');
             window.location.href = '../Comment Page/commentsPage.html';
             sessionStorage.setItem('post_id', `${container.id}`);
-            console.log(sessionStorage.getItem('post_id'));
 
         }
     })
@@ -78,7 +72,6 @@ const loadPostsTimesLikedData = async () => {
     const {
         data
     } = await axios.get(url);
-    console.log(data);
 
     data.body.forEach(el => {
         creatingCardPost(el)
@@ -92,7 +85,6 @@ const loadPictureTimesLikedData = async () => {
     const {
         data
     } = await axios.get(url);
-    console.log(data);
 
     data.body.forEach(el => {
         creatingCardPost(el)
@@ -104,16 +96,14 @@ const likeAPost = async (postId) => {
     url = `http://localhost:3131/likes/posts/${postId}`;
 
     //user login information object
-    //to review
     let loginInfo = {
-        loggedUsername: 'vonbar',
-        loggedPassword: '123'
+        loggedUsername: loggedUsername,
+        loggedPassword: loggedPassword
     };
     try {
         const {
             data
         } = await axios.post(url, loginInfo);
-        console.log('this is data', data)
         return data;
     } catch (err) {
         console.log(err)
@@ -124,16 +114,14 @@ const likeAPicture = async (postId) => {
     url = `http://localhost:3131/likes/pictures/${postId}`
 
     //user login information object
-    //to review
     let loginInfo = {
-        loggedUsername: 'vonbar',
-        loggedPassword: '123'
+        loggedUsername: loggedUsername,
+        loggedPassword: loggedPassword
     };
     try {
         const {
             data
         } = await axios.post(url, loginInfo);
-        // console.log('this is data', data)
         return data;
     } catch (err) {
         console.log(err)
@@ -143,33 +131,27 @@ const likeAPicture = async (postId) => {
 //this function deletes a like
 const deletePostLike = async (postId) => {
     url = `http://localhost:3131/likes/posts/${postId}/delete`
-    console.log('called')
     //user login information object
     let loginInfo = {
-        loggedUsername: 'vonbar',
-        loggedPassword: '123'
+        loggedUsername: loggedUsername,
+        loggedPassword: loggedPassword
     };
     const {
         data
     } = await axios.put(url, loginInfo)
-    console.log(data);
-
 }
 
 //this function deletes a like
 const deletePicLike = async (picId) => {
     url = `http://localhost:3131/likes/pictures/${picId}/delete`
-    console.log('called')
     //user login information object
     let loginInfo = {
-        loggedUsername: 'vonbar',
-        loggedPassword: '123'
+        loggedUsername: loggedUsername,
+        loggedPassword: loggedPassword
     };
     const {
         data
     } = await axios.put(url, loginInfo)
-    console.log(data);
-
 }
 
 //function to clear screen
