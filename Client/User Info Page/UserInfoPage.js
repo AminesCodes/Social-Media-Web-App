@@ -18,19 +18,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
 
     // TABLE OF CONTENT
-    const tableOfContents = document.querySelector('#tableOfContents');
+    // const tableOfContents = document.querySelector('#tableOfContents');
 
-    tableOfContents.addEventListener('click', (event) => {
-        if (event.target.nodeName === 'A') {
-            sessionStorage.removeItem("targetUser");
-        }
-    })
-    
+    // tableOfContents.addEventListener('click', (event) => {
+    //     if (event.target.nodeName === 'A') {
+    //         sessionStorage.removeItem("targetUser");
+    //     }
+    // })
+
     if (!loggedUsername) {
         logoutBtn.innerText = 'Home';
     }
-    
-    
+
+
     // INPUTS
     const usernameInput = document.querySelector('#username');
     const passwordInput = document.querySelector('#password');
@@ -65,8 +65,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const loggedUserTag = document.querySelector('#loggedUser');
     if (!loggedUsername) {
-      logoutBtn.innerText = 'Home';
-      loggedUserTag.innerText = targetUser;
+        logoutBtn.innerText = 'Home';
+        loggedUserTag.innerText = targetUser;
     } else if (loggedUsername) {
         let userInfo = await getInfoAboutUser(loggedUsername, feedbackDiv, feedbackText);
         loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     })
 
-    
+
 }) ///////////////////////////////////////////////
 
 
@@ -119,7 +119,7 @@ const getInfoAboutUser = async (loggedUsername, feedbackDiv, feedbackText) => {
 
 
 const fillOutForm = (usernameInput, firstNameInput, lastNameInput, dobInput, userInfo) => {
-    
+
     usernameInput.value = userInfo.body.username;
     firstNameInput.value = userInfo.body.firstname;
     lastNameInput.value = userInfo.body.lastname;
@@ -129,23 +129,23 @@ const fillOutForm = (usernameInput, firstNameInput, lastNameInput, dobInput, use
 }
 
 const checkValidDOBFormat = (dob) => {
-    
+
     if (dob.length !== 10 || dob[4] !== '-' || dob[7] !== '-') {
         return false;
     } else {
         const year = dob.slice(0, 4);
         const month = dob.slice(5, 7);
         const day = dob.slice(8, 10);
-        if (isNaN(parseInt(year)) || String(parseInt(year)).length !== year.length
-            || isNaN(parseInt(month)) || isNaN(parseInt(day))) {
-                return false;
-            }
+        if (isNaN(parseInt(year)) || String(parseInt(year)).length !== year.length ||
+            isNaN(parseInt(month)) || isNaN(parseInt(day))) {
+            return false;
+        }
     }
     return true;
 }
 
 const updateUserRequest = async (usernameInput, firstNameInput, lastNameInput, dobInput, updateInfo, feedbackDiv, feedbackText, loggedUserTag) => {
-    
+
     try {
         const response = await axios.patch(`${baseURL}/users/${loggedUsername}`, updateInfo)
         fillOutForm(usernameInput, firstNameInput, lastNameInput, dobInput, response.data);
