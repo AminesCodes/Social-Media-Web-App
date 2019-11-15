@@ -9,21 +9,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   const logoutBtn = document.querySelector('#logoutBtn');
 
   logoutBtn.addEventListener('click', () => {
-      sessionStorage.removeItem("loggedUsername");
-      sessionStorage.removeItem("loggedPassword");
-      sessionStorage.removeItem("targetUser");
+    sessionStorage.removeItem("loggedUsername");
+    sessionStorage.removeItem("loggedPassword");
+    sessionStorage.removeItem("targetUser");
 
-      window.location.href = '../../index.html';
+    window.location.href = '../../index.html';
   })
 
   // TABLE OF CONTENT
-  const tableOfContents = document.querySelector('#tableOfContents');
+  // const tableOfContents = document.querySelector('#tableOfContents');
 
-  tableOfContents.addEventListener('click', (event) => {
-    if (event.target.nodeName === 'A') {
-        sessionStorage.removeItem("targetUser");
-    }
-  })
+  // tableOfContents.addEventListener('click', (event) => {
+  //   if (event.target.nodeName === 'A') {
+  //       sessionStorage.removeItem("targetUser");
+  //   }
+  // })
 
   const loggedUserTag = document.querySelector('#loggedUser');
   if (!loggedUsername) {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     loggedUserTag.innerText = targetUser;
   } else if (loggedUsername) {
     let userInfo = await getInfoAboutUser(loggedUsername);
-        loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
+    loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
   }
 
 
@@ -45,26 +45,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 // loads Albums page (by logged or target username)
 const loadPage = () => {
   axios.get('http://localhost:3131/albums/')
-  .then(response => {
-    let create = document.createElement('div')
-    container.appendChild(create)
-    let list = document.createElement('div')
-    list.id = 'list'
-    container.appendChild(list)
-    for (a of response.data.body) {
-      if (a.username === targetUser) {
-        createCardAlbum(a)
-        getCover(a.id)
-    } else if (a.username === loggedUsername) {
-        if (document.getElementById('create') === null) {
-          create.id = 'create'
-          setAlbumForm()
+    .then(response => {
+      let create = document.createElement('div')
+      container.appendChild(create)
+      let list = document.createElement('div')
+      list.id = 'list'
+      container.appendChild(list)
+      for (a of response.data.body) {
+        if (a.username === targetUser) {
+          createCardAlbum(a)
+          getCover(a.id)
+        } else if (a.username === loggedUsername) {
+          if (document.getElementById('create') === null) {
+            create.id = 'create'
+            setAlbumForm()
+          }
+          createCardAlbum(a)
+          getCover(a.id)
+        }
       }
-        createCardAlbum(a)
-        getCover(a.id)
-    }
-    }
-  })
+    })
 }
 
 //ALBUMS PAGE FUNCTIONS
@@ -113,10 +113,13 @@ const addDeleteBtn = (id) => {
 
 // deletes Album
 const deleteAlbum = (id) => {
-  axios.put(`http://localhost:3131/albums/${id}/delete`, { loggedUsername: loggedUsername, loggedPassword: loggedPassword})
-  .then(response => {
-    location.reload()
-  })
+  axios.put(`http://localhost:3131/albums/${id}/delete`, {
+      loggedUsername: loggedUsername,
+      loggedPassword: loggedPassword
+    })
+    .then(response => {
+      location.reload()
+    })
 }
 
 // sets form for creating Albums
@@ -137,10 +140,14 @@ const setAlbumForm = () => {
 // creates Album
 const createAlbum = () => {
   let albumName = document.getElementById('albumName').value
-  axios.post('http://localhost:3131/albums/', { albumName: albumName, loggedUsername: loggedUsername, loggedPassword: loggedPassword })
-  .then(response => {
-    location.reload()
-  })
+  axios.post('http://localhost:3131/albums/', {
+      albumName: albumName,
+      loggedUsername: loggedUsername,
+      loggedPassword: loggedPassword
+    })
+    .then(response => {
+      location.reload()
+    })
 }
 
 // to click on Album cards and its consequences
@@ -269,12 +276,12 @@ const grab = (i, go, response, img) => {
   list.innerText = ''
   let length = response.data.body.length
   while (i < length && go === 1) {
-  let link = response.data.body[i].picture_link
-  let albumId = response.data.body[i].album_id
-  img.src = link
-  img.className = albumId
-  createCardPic(response.data.body[i], img)
-  go = 0
+    let link = response.data.body[i].picture_link
+    let albumId = response.data.body[i].album_id
+    img.src = link
+    img.className = albumId
+    createCardPic(response.data.body[i], img)
+    go = 0
   }
 }
 
@@ -282,10 +289,13 @@ const grab = (i, go, response, img) => {
 const delPicture = () => {
   let img = document.querySelector('img')
   let pictureId = img.id
-  axios.put(`http://localhost:3131/pictures/delete/${pictureId}` , { loggedUsername: loggedUsername, loggedPassword: loggedPassword })
-  .then(response => {
-    location.reload()
-  })
+  axios.put(`http://localhost:3131/pictures/delete/${pictureId}`, {
+      loggedUsername: loggedUsername,
+      loggedPassword: loggedPassword
+    })
+    .then(response => {
+      location.reload()
+    })
 }
 
 // sets form for adding Picture to current Album
@@ -310,18 +320,22 @@ const addPicture = () => {
   let img = document.querySelector('img')
   let albumId = img.className
   let pictureLink = document.getElementById('pictureLink').value
-  axios.post(`http://localhost:3131/pictures/albums/${albumId}`, { pictureLink: pictureLink, loggedUsername: loggedUsername, loggedPassword: loggedPassword })
-  .then(response => {
-    location.reload()
-  })
+  axios.post(`http://localhost:3131/pictures/albums/${albumId}`, {
+      pictureLink: pictureLink,
+      loggedUsername: loggedUsername,
+      loggedPassword: loggedPassword
+    })
+    .then(response => {
+      location.reload()
+    })
 }
 
 const getInfoAboutUser = async (loggedUsername) => {
   try {
-      const url = `${baseURL}/users/${loggedUsername}`;
-      const response = await axios.get(url);
-      return response.data;
+    const url = `${baseURL}/users/${loggedUsername}`;
+    const response = await axios.get(url);
+    return response.data;
   } catch (err) {
-      console.log(err)
+    console.log(err)
   }
 }
