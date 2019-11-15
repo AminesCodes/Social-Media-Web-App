@@ -2,6 +2,12 @@
 <html lang="en">
 
 <head>
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.2.3/dist/css/uikit.min.css" />
+
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.2.3/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.2.3/dist/js/uikit-icons.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -12,31 +18,42 @@
 </head>
 
 <body>
-    <div id="container">
-        <div id="tableOfContents">
-            <h2 id="loggedUser"></h2><br>
-            <a href="../User Info Page/UserInfoPage.html">Profile</a><br>
-            <a href="../Main Page/mainPage.html">Welcome</a><br>
-            <a href="../Post Page/PostsPage.html">Posts</a><br>
-            <a href="../Albums Page/albumsPage.html">Albums</a><br>
-            <a href="../Comment Page/commentsPage.html">Comments</a><br>
-            <a href="#">Likes</a><br>
-            <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
-        </div>
-        <div id="feed">
-            <h3>Feed</h3>
-            <div id="overFlow">
-                <button id="toggle" class="postsLoad">Toggle</button>
-                <div id="backAndForthButtons">
-                    <button id="previous">Previous</button>
-                    <button id="next">Next</button>
-                </div>
-                <div id="clearScreen">
-                    <div id="dataContainer"></div>
-                    <div id="comments"></div>
+    <div class="uk-card uk-card-default uk-card-body" style="z-index: 980; margin-bottom: 50px;"
+        uk-sticky="animation: uk-animation-slide-top stick">
+        <div class="uk-button-group" id="navbar">
+            <h2 id="loggedUser" class="uk-card uk-card-default "></h2><br>
+            <button class="uk-button uk-button-default uk-margin-left">Menu</button>
+            <div class="uk-inline">
+                <button class="uk-button uk-button-default" type="button"><span
+                        uk-icon="icon:  triangle-down"></span></button>
+                <div uk-dropdown="mode: click; boundary: ! .uk-button-group; boundary-align: true;">
+                    <ul class="uk-nav uk-dropdown-nav">
+                        <li> <a href="../User Info Page/UserInfoPage.html">Profile</a></li>
+                        <li><a href="../Main Page/mainPage.html">Welcome</a></li>
+                        <li><a href="../Post Page/PostsPage.html">Posts</a></li>
+                        <li><a href="../Albums Page/albumsPage.html">Albums</a></li>
+                        <li><a href="../Comment Page/commentsPage.html">Comments</a></li>
+                        <li><a href="../Like Page/likePage.html">Likes</a></li>
+                        <li><button id="logoutBtn" class='tableOfContentsBtn'>Log out</button></li>
+                    </ul>
                 </div>
             </div>
         </div>
+    </div>
+    <div id="feed">
+        <h3>Feed</h3>
+        <div id="overFlow">
+            <button id="toggle" class="postsLoad">Toggle</button>
+            <div id="backAndForthButtons">
+                <button id="previous">Previous</button>
+                <button id="next">Next</button>
+            </div>
+            <div id="clearScreen">
+                <div id="dataContainer"></div>
+                <div id="comments"></div>
+            </div>
+        </div>
+    </div>
     </div>
 
     </div>

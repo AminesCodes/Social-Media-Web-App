@@ -22,13 +22,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
 
     // TABLE OF CONTENT
-    const tableOfContents = document.querySelector('#tableOfContents');
+    // const tableOfContents = document.querySelector('#tableOfContents');
 
-    tableOfContents.addEventListener('click', (event) => {
-        if (event.target.nodeName === 'A') {
-            sessionStorage.removeItem("targetUser");
-        }
-    })
+    // tableOfContents.addEventListener('click', (event) => {
+    //     if (event.target.nodeName === 'A') {
+    //         sessionStorage.removeItem("targetUser");
+    //     }
+    // })
 
     const loggedUserTag = document.querySelector('#loggedUser');
     if (!loggedUsername) {
