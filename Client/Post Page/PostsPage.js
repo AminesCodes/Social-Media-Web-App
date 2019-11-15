@@ -21,13 +21,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
 
     // TABLE OF CONTENT
-    const tableOfContents = document.querySelector('#tableOfContents');
+    // const tableOfContents = document.querySelector('#tableOfContents');
 
-    tableOfContents.addEventListener('click', (event) => {
-        if (event.target.nodeName === 'A') {
-            sessionStorage.removeItem("targetUser");
-        }
-    })
+    // tableOfContents.addEventListener('click', (event) => {
+    //     if (event.target.nodeName === 'A') {
+    //         sessionStorage.removeItem("targetUser");
+    //     }
+    // })
 
     // HEADERS
     const h1Header = grab('username');
@@ -55,14 +55,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const loggedUserTag = document.querySelector('#loggedUser');
     if (!loggedUsername) {
-      logoutBtn.innerText = 'Home';
-      loggedUserTag.innerText = targetUser;
+        logoutBtn.innerText = 'Home';
+        loggedUserTag.innerText = targetUser;
     } else if (loggedUsername) {
-      let userInfo = await getInfoAboutUser(loggedUsername, feedbackDiv, feedbackText);
-          loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
+        let userInfo = await getInfoAboutUser(loggedUsername, feedbackDiv, feedbackText);
+        loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
     }
 
-    
+
     // FEEDBACK DIV CLOSE BUTTON
     const closeBtn = document.querySelector('#closeBtn');
 
@@ -109,9 +109,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             newPostForm.className = event.target.id;
             newPostInput.value = event.target.innerText
         }
-    })  
-    
-    
+    })
+
+
     newPostForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     })
 
-})/////////////////////////////////////////////////////////
+}) /////////////////////////////////////////////////////////
 
 
 const loadAllPostsOfUser = async (user, containerDiv, feedbackDiv, feedbackText) => {
@@ -163,26 +163,26 @@ const fillOutPostsDiv = async (user, data, containerDiv) => {
             postContainerDiv.className = 'PostDiv';
             postContainerDiv.id = `post_${post.post_id}`;
             containerDiv.appendChild(postContainerDiv);
-    
+
             const postOwnerDiv = document.createElement('div');
             postOwnerDiv.className = 'username';
             postOwnerDiv.innerText = post.poster_username;
-    
+
             const postingDateDiv = document.createElement('div');
             postingDateDiv.className = 'date';
             postingDateDiv.innerText = post.posting_date;
-    
+
             const postTextDiv = document.createElement('div');
             postTextDiv.className = 'postBody';
             postTextDiv.id = `postID_${post.post_id}`
             postTextDiv.innerText = post.body;
-    
+
             const likesDiv = document.createElement('div');
             likesDiv.className = 'like'
             likesDiv.innerText = `👍${post.total_likes}`;
-    
+
             postContainerDiv.append(postOwnerDiv, postingDateDiv, postTextDiv, likesDiv)
-            
+
             if (user === loggedUsername) {
                 const deleteDiv = document.createElement('div');
                 deleteDiv.className = 'deleteDiv'
@@ -192,7 +192,7 @@ const fillOutPostsDiv = async (user, data, containerDiv) => {
 
             const allCommentsByPost = await axios.get(`${baseURL}/comments/posts/${post.post_id}`)
             const allComments = allCommentsByPost.data.body;
-            
+
             if (allComments.length) {
                 for (let comment of allComments) {
                     const commentDiv = document.createElement('div');
@@ -206,7 +206,7 @@ const fillOutPostsDiv = async (user, data, containerDiv) => {
                     const commentTextDiv = document.createElement('div');
                     commentTextDiv.className = 'comment';
                     commentTextDiv.innerText = comment.comment;
-        
+
                     postContainerDiv.append(commenterDiv, commentTextDiv)
                 }
             }

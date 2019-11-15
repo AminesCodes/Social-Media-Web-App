@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.2.3/dist/css/uikit.min.css" />
+
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.2.3/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.2.3/dist/js/uikit-icons.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -9,41 +16,56 @@
     <link rel="stylesheet" href="PostsPage.css">
     <title>Social Media App</title>
 </head>
+
 <body>
     <div id="container">
-        <div id="tableOfContents">
-            <h2 id="loggedUser"></h2><br>
-            <a href="../User Info Page/UserInfoPage.html">Profile</a><br>
-            <a href="../Main Page/mainPage.html">Welcome</a><br>
-            <a href="#">Posts</a><br>
-            <a href="../Albums Page/albumsPage.html">Albums</a><br>
-            <a href="../Comment Page/commentsPage.html">Comments</a><br>
-            <a href="../Like Page/likePage.html">Likes</a><br>
-            <button id="logoutBtn" class='tableOfContentsBtn'>Log out</button>
+        <div class="uk-card uk-card-default uk-card-body" style="z-index: 980; margin-bottom: 50px;"
+            uk-sticky="animation: uk-animation-slide-top stick">
+            <div class="uk-button-group" id="navbar">
+                <h2 id="loggedUser" class="uk-card uk-card-default "></h2><br>
+                <button class="uk-button uk-button-default uk-margin-left">Menu</button>
+                <div class="uk-inline">
+                    <button class="uk-button uk-button-default" type="button"><span
+                            uk-icon="icon:  triangle-down"></span></button>
+                    <div uk-dropdown="mode: click; boundary: ! .uk-button-group; boundary-align: true;">
+                        <ul class="uk-nav uk-dropdown-nav">
+                            <li> <a href="../User Info Page/UserInfoPage.html">Profile</a></li>
+                            <li><a href="../Main Page/mainPage.html">Welcome</a></li>
+                            <li><a href="../Post Page/PostsPage.html">Posts</a></li>
+                            <li><a href="../Albums Page/albumsPage.html">Albums</a></li>
+                            <li><a href="../Comment Page/commentsPage.html">Comments</a></li>
+                            <li><a href="../Like Page/likePage.html">Likes</a></li>
+                            <li><button id="logoutBtn" class='tableOfContentsBtn'>Log out</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
 
-    <div id='feed'>
+        <div id='feed'>
 
-        <h1 id='username'></h1>
-        <hr>
-        <h3>Share something</h3>
-        <form> 
-            <textarea name="newPostBody" id="newPostInput" cols="70" rows="10"></textarea>
-            <button>Post</button>
-        </form>
+            <h1 id='username'></h1>
+            <hr>
+            <h3>Share something</h3>
+            <form>
+                <textarea name="newPostBody" id="newPostInput" cols="50" rows="3" class="uk-textarea"
+                    placeholder="Enter Comment"></textarea>
+                <button onclick="UIkit.notification({message: 'Post Changed', status: 'success'})">Edit</button>
+            </form>
 
-        <div id="allPostsDiv">
+            <div id="allPostsDiv">
+
+            </div>
+
+            <div id="feedbackDiv">
+                <button id="closeBtn">X</button>
+                <p id="feedbackText"></p>
+            </div>
 
         </div>
-
-        <div id="feedbackDiv">
-            <button id="closeBtn">X</button>
-            <p id="feedbackText"></p>
-        </div>
-        
     </div>
-    </div>
-    
+
 
 </body>
+
 </html>
