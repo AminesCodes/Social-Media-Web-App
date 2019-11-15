@@ -18,20 +18,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
 
     // TABLE OF CONTENT
-    const tableOfContents = document.querySelector('#tableOfContents');
+    // const tableOfContents = document.querySelector('#tableOfContents');
+    // console.log(tableOfContents);
 
-    tableOfContents.addEventListener('click', (event) => {
-        if (event.target.nodeName === 'A') {
-            sessionStorage.removeItem("targetUser");
-        }
-    })
+    // tableOfContents.addEventListener('click', (event) => {
+    //     console.log(event.target.nodeName);
+    //     if (event.target.nodeName === 'A') {
+
+    //         sessionStorage.removeItem("targetUser");
+    //     }
+    // })
     const loggedUserTag = document.querySelector('#loggedUser');
     if (!loggedUsername) {
-      logoutBtn.innerText = 'Home';
-      loggedUserTag.innerText = targetUser;
+        logoutBtn.innerText = 'Home';
+        loggedUserTag.innerText = targetUser;
     } else if (loggedUsername) {
-      let userInfo = await getInfoAboutUser(loggedUsername);
-          loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
+        let userInfo = await getInfoAboutUser(loggedUsername);
+        loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
     }
 
     loadPostsTimesLikedData();
@@ -246,4 +249,4 @@ const getInfoAboutUser = async (loggedUsername) => {
     } catch (err) {
         console.log(err)
     }
-  }
+}
