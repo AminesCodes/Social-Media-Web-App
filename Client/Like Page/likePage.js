@@ -9,7 +9,7 @@ let numOfLikesArray = [];
 
 const baseURL = 'http://localhost:3131';
 
-document.addEventListener('DOMContentLoaded', async () => {   
+document.addEventListener('DOMContentLoaded', async () => {
     // BUTTON
     const logoutBtn = document.querySelector('#logoutBtn');
 
@@ -32,11 +32,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const loggedUserTag = document.querySelector('#loggedUser');
     if (!loggedUsername) {
-      logoutBtn.innerText = 'Home';
-      loggedUserTag.innerText = targetUser;
+        logoutBtn.innerText = 'Home';
+        loggedUserTag.innerText = targetUser;
     } else if (loggedUsername) {
-      let userInfo = await getInfoAboutUser(loggedUsername);
-          loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
+        let userInfo = await getInfoAboutUser(loggedUsername);
+        loggedUserTag.innerText = `${userInfo.body.firstname} ${userInfo.body.lastname}`;
     }
 
     loadTargetUserLikedPostData();
@@ -65,19 +65,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (event.target.className === 'postTimesLiked') {
             let container = event.target.parentNode.parentNode;
             let response = await likeAPost(container.id)
-            creatingCard('posts', dataArr[num])
+            creatingCard('posts', dataArr[postNum])
             if (response.message === 'post already liked') {
                 await deletePostLike(container.id);
-                creatingCard('posts', dataArr[num])
+                creatingCard('posts', dataArr[postNum])
             }
         }
         if (event.target.className === 'picTimesLiked') {
             let container = event.target.parentNode.parentNode;
             let response = await likeAPicture(container.id)
-            creatingCard('pictures', dataArr[num])
+            creatingCard('pictures', dataArr[picNum])
             if (response.message === 'picture already liked') {
                 await deletePicLike(container.id);
-                creatingCard('pictures', dataArr[num])
+                creatingCard('pictures', dataArr[picNum])
             }
         }
         if (event.target.className === 'commentDiv') {
@@ -143,11 +143,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadTargetUserLikedPostData = async () => {
-    url = `http://localhost:3131/likes/posts/interest/${targetUser}`
+    let userToDisplay;
+    if (targetUser) {
+        userToDisplay = targetUser
+    } else if (loggedUsername) {
+        userToDisplay = loggedUsername
+    }
+    // console.log(targetUser);
+
+    url = `http://localhost:3131/likes/posts/interest/${userToDisplay}`
     const {
         data
     } = await axios.get(url);
     dataArr = data.body;
+    console.log('data', url);
+
     if (dataArr.length) {
         creatingCard('posts', dataArr[postNum])
     }
@@ -159,9 +169,13 @@ const displayData = (route, num) => {
 
 // this function loads the trending(times a post is liked) likes from the database
 const loadTargetUserLikedPicsData = async () => {
-    
-    targetUser = targetUser
-    url = `http://localhost:3131/likes/pictures/interest/${targetUser}`
+    let userToDisplay;
+    if (targetUser) {
+        userToDisplay = targetUser
+    } else if (loggedUsername) {
+        userToDisplay = loggedUsername
+    }
+    url = `http://localhost:3131/likes/pictures/interest/${userToDisplay}`
     const {
         data
     } = await axios.get(url);
@@ -195,15 +209,15 @@ const loadNumOfLikes = async (endpoint, id) => {
     url = `http://localhost:3131/likes/${endpoint}/${id}`
 
     try {
-    const {
-        data
-    } = await axios.get(url)
+        const {
+            data
+        } = await axios.get(url)
+        numOfLikesArray = data.body;
 
     } catch (error) {
         console.log(error);
 
     }
-    numOfLikesArray = data.body;
     return numOfLikesArray
 }
 
@@ -389,4 +403,4 @@ const getInfoAboutUser = async (loggedUsername) => {
     } catch (err) {
         console.log(err)
     }
-  }
+}
