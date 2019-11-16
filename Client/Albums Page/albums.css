@@ -1,34 +1,16 @@
-body {
-    display: grid;
-    grid-template-columns: 20% 80%;
-}
-
-#table {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    gap: 20px;
-    align-items: center;
-    border: 2px solid peru;
-    padding: 20px;
-    height: 500px;
-}
-
 #container {
-    display: flex;
-    flex-direction: column;
-    padding-left: 55px;
-    padding-right: 55px;
-    padding-top: 35px;
+  display: flex;
+  flex-direction: column;
+  padding-left: 55px;
+  padding-right: 55px;
+  padding-top: 35px;
 }
 
 h1 {
   text-align: center;
 }
 
-#title {
-
-}
+#title {}
 
 #create {
   align-self: center;
@@ -56,12 +38,4 @@ h1 {
 
 #nextBtn {
   align: right;
-}
-
-a {
-    display: flex;
-    border: 2px solid black;
-    padding: 20px;
-    width: 10vw;
-    justify-content: center;
 }

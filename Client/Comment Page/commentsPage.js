@@ -17,13 +17,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
 
     // TABLE OF CONTENT
-    const tableOfContents = document.querySelector('#tableOfContents');
+    // const tableOfContents = document.querySelector('#tableOfContents');
 
-    tableOfContents.addEventListener('click', (event) => {
-        if (event.target.nodeName === 'A') {
-            sessionStorage.removeItem("targetUser");
-        }
-    })
+    // tableOfContents.addEventListener('click', (event) => {
+    //     if (event.target.nodeName === 'A') {
+    //         sessionStorage.removeItem("targetUser");
+    //     }
+    // })
 
     const loggedUserTag = document.querySelector('#loggedUser');
     if (!loggedUsername) {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let addDiv = document.querySelector('#add-div')
 
     let tableOfContentDiv = document.querySelector('#tableOfcontent')
-    
+
     if (targetUser) {
         getAllComments(targetUser)
     } else {
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // to review
             form.id = `deleteCommentOnPicture`
             let pictureID = event.target.parentNode.parentNode.firstChild.id // picture_id
-           
+
             // form.className = `{picture_id: ${pictureID}, comment_id: ${event.target.className}}`
             deleteComment('pictures', `{"target_id": ${pictureID}, "comment_id": ${event.target.className}}`)
         }
@@ -115,13 +115,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             form.id = `updateCommentOnPost`
             let postID = event.target.parentNode.parentNode.firstChild.id
             // let text = event.target
-         
+
             form.className = `{"target_id": ${postID}, "comment_id": ${event.target.className}}`
             //form.style.display = 'block'
             addDiv.style.display = 'block'
             newComment.value = event.target.innerText
             //updateComments('post', `{"target_id": ${postId}, "comment_id": ${event.target.className}`)
-           
+
         } else if (event.target.parentNode.parentNode.className === 'picture' && event.target.innerText !== 'X') {
             form.id = `updateCommentOnPicture`
             let pictureID = event.target.parentNode.parentNode.firstChild.id // picture_id
