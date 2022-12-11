@@ -19,7 +19,7 @@
   "homepage": "https://github.com/AminesCodes/Social-Media-Web-App#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "pg-promise": "^9.3.3"
   }
 }
